@@ -404,6 +404,217 @@ body {
   cursor: not-allowed;
 }
 
+/* ============================================================
+   ADVANCED ANIMATION & MOTION GRAPHICS ENGINE
+   ============================================================ */
+
+/* 1. Radar Sweep & Spatial Pings */
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.radar-scanner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.08) 0%, rgba(3, 7, 18, 0.95) 75%);
+  overflow: hidden;
+}
+.radar-scanner::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  background: conic-gradient(from 0deg at 0% 0%, rgba(56, 189, 248, 0.5) 0deg, rgba(56, 189, 248, 0.1) 45deg, transparent 90deg);
+  transform-origin: 0% 0%;
+  animation: radarSweep 4s linear infinite;
+  pointer-events: none;
+}
+.radar-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px dashed rgba(56, 189, 248, 0.25);
+  pointer-events: none;
+}
+.radar-crosshair-h {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(56, 189, 248, 0.2);
+}
+.radar-crosshair-v {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(56, 189, 248, 0.2);
+}
+
+@keyframes pingExpand {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
+}
+.radar-ping-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px #38bdf8;
+}
+.radar-ping-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #38bdf8;
+  animation: pingExpand 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+/* 2. Data Packet Flow & Conveyeors */
+@keyframes flowHorizontal {
+  0% { transform: translateX(-100%); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateX(450%); opacity: 0; }
+}
+.data-flow-line {
+  position: relative;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0.4rem 0;
+}
+.data-packet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #38bdf8, #ffffff);
+  box-shadow: 0 0 8px #38bdf8;
+  animation: flowHorizontal 2.4s ease-in-out infinite;
+}
+.data-packet-green {
+  background: linear-gradient(90deg, transparent, #34d399, #ffffff);
+  box-shadow: 0 0 8px #34d399;
+}
+.data-packet-red {
+  background: linear-gradient(90deg, transparent, #f87171, #ffffff);
+  box-shadow: 0 0 8px #f87171;
+}
+
+@keyframes conveyorMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 0; }
+}
+.conveyor-track {
+  background-image: repeating-linear-gradient(90deg, rgba(248,113,113,0.3) 0, rgba(248,113,113,0.3) 10px, transparent 10px, transparent 20px);
+  background-size: 40px 100%;
+  animation: conveyorMove 1.5s linear infinite;
+}
+.conveyor-track-green {
+  background-image: repeating-linear-gradient(90deg, rgba(52,211,153,0.4) 0, rgba(52,211,153,0.4) 10px, transparent 10px, transparent 20px);
+  background-size: 40px 100%;
+  animation: conveyorMove 0.8s linear infinite;
+}
+
+/* 3. Obstacle Beacon Flash (CAD 14 Medium-Intensity Type B Flash) */
+@keyframes beaconFlashAOL {
+  0%, 100% { opacity: 0.15; transform: scale(0.85); box-shadow: 0 0 4px rgba(248, 113, 113, 0.4); }
+  45% { opacity: 0.15; }
+  50% { opacity: 1; transform: scale(1.4); box-shadow: 0 0 25px #f87171, 0 0 45px #ef4444; }
+  55% { opacity: 0.15; }
+}
+.aol-beacon-live {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ef4444;
+  display: inline-block;
+  animation: beaconFlashAOL 1.5s infinite;
+}
+
+/* 4. Laser Altitude Scanner */
+@keyframes laserScanY {
+  0% { top: 5%; opacity: 0.8; }
+  50% { top: 92%; opacity: 1; }
+  100% { top: 5%; opacity: 0.8; }
+}
+.laser-scanner-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8, 0 0 20px #0284c7;
+  animation: laserScanY 3.5s ease-in-out infinite;
+  z-index: 5;
+}
+
+/* 5. Radio Broadcast / NOTAM Pulse */
+@keyframes radioWave {
+  0% { transform: scale(0.3); opacity: 1; }
+  100% { transform: scale(3.5); opacity: 0; }
+}
+.radio-wave-node {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.radio-wave-circle {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid #38bdf8;
+  animation: radioWave 2s cubic-bezier(0.1, 0.6, 0.3, 1) infinite;
+  pointer-events: none;
+}
+.radio-wave-circle:nth-child(2) { animation-delay: 0.65s; }
+.radio-wave-circle:nth-child(3) { animation-delay: 1.3s; }
+
+/* 6. Dynamic Entrance Stagger */
+.slide.active .anim-fade-up {
+  animation: slideFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.slide.active .anim-stagger-1 { animation-delay: 0.08s; }
+.slide.active .anim-stagger-2 { animation-delay: 0.16s; }
+.slide.active .anim-stagger-3 { animation-delay: 0.24s; }
+.slide.active .anim-stagger-4 { animation-delay: 0.32s; }
+.slide.active .anim-stagger-5 { animation-delay: 0.40s; }
+
+@keyframes slideFadeUp {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 7. Official Seal Stamp Drop */
+@keyframes sealDrop {
+  0% { transform: scale(2.2) rotate(-15deg); opacity: 0; }
+  70% { transform: scale(0.9) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.seal-stamp-anim {
+  animation: sealDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
 /* Custom Table */
 .c-table {
   width: 100%;
@@ -437,7 +648,7 @@ body {
 <div id="presentationContainer">
 
   <!-- ============================================================
-       SLIDE 1: HERO COVER SLIDE
+       SLIDE 1: HERO COVER SLIDE (WITH ANIMATED AIRSPACE RADAR HUD)
        ============================================================ -->
   <div class="slide active" id="cad_s0">
     <div class="slide-box">
@@ -447,7 +658,7 @@ body {
       </div>
 
       <div style="display:flex;gap:2rem;align-items:center;margin:auto 0">
-        <div style="flex:1.3">
+        <div style="flex:1.3" class="anim-fade-up">
           <div style="font-size:0.85rem;font-weight:800;color:#38bdf8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem">
             Civil Aviation Authority of Malaysia · E-Application Suite
           </div>
@@ -463,29 +674,42 @@ body {
               <div style="font-size:1.6rem">📡</div>
               <div>
                 <div style="font-size:0.7rem;color:#94a3b8;font-weight:700">TARGETED STRUCTURES</div>
-                <div style="font-size:1rem;font-weight:900;color:#38bdf8">615,000+ Assets</div>
+                <div style="font-size:1.05rem;font-weight:900;color:#38bdf8" class="mono">615,000+ Assets</div>
               </div>
             </div>
             <div class="g-card g-card-glow-green" style="padding:0.85rem 1rem;display:flex;align-items:center;gap:0.75rem">
               <div style="font-size:1.6rem">⚖️</div>
               <div>
                 <div style="font-size:0.7rem;color:#94a3b8;font-weight:700">STATUTORY MANDATE</div>
-                <div style="font-size:1rem;font-weight:900;color:#34d399">Act 3 Section 24O</div>
+                <div style="font-size:1.05rem;font-weight:900;color:#34d399" class="mono">Act 3 Section 24O</div>
               </div>
             </div>
             <div class="g-card g-card-glow-amber" style="padding:0.85rem 1rem;display:flex;align-items:center;gap:0.75rem">
               <div style="font-size:1.6rem">💰</div>
               <div>
                 <div style="font-size:0.7rem;color:#94a3b8;font-weight:700">ANNUAL CAAM REVENUE</div>
-                <div style="font-size:1rem;font-weight:900;color:#fbbf24">RM 163.5 Million</div>
+                <div style="font-size:1.05rem;font-weight:900;color:#fbbf24" class="mono">RM 163.5 Million</div>
               </div>
             </div>
           </div>
         </div>
 
         <div style="flex:1;min-width:0">
-          <div class="img-wrap" style="height:410px">
+          <div class="img-wrap" style="height:410px;position:relative">
             <img src="assets/eapp_dashboard.jpg" alt="CAAM E-Application Portal">
+            
+            <!-- Live Radar HUD Overlay -->
+            <div style="position:absolute;top:15px;right:15px;width:120px;height:120px;z-index:4;pointer-events:none">
+              <div class="radar-scanner">
+                <div class="radar-ring" style="width:80%;height:80%"></div>
+                <div class="radar-ring" style="width:45%;height:45%"></div>
+                <div class="radar-crosshair-h"></div>
+                <div class="radar-crosshair-v"></div>
+                <div class="radar-ping-dot" style="top:32%;left:65%"></div>
+                <div class="radar-ping-dot" style="top:70%;left:35%;animation-delay:1.1s"></div>
+              </div>
+            </div>
+
             <div class="img-tag-top"><span class="pulse-dot"></span> NEXT.JS 14 CLOUD-NATIVE ENGINE</div>
             <div class="img-caption-bar">
               <h5>National Height Limitation &amp; AOL Control Center</h5>
@@ -535,15 +759,15 @@ body {
           <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.5rem">
             <div style="background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3);padding:0.55rem;border-radius:0.45rem;text-align:center">
               <div style="font-size:0.65rem;color:#fca5a5;font-weight:700">MANUAL VETTING</div>
-              <div style="font-size:0.95rem;font-weight:900;color:#ffffff">21–42 Days</div>
+              <div style="font-size:0.95rem;font-weight:900;color:#ffffff" class="mono">21–42 Days</div>
             </div>
             <div style="background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3);padding:0.55rem;border-radius:0.45rem;text-align:center">
               <div style="font-size:0.65rem;color:#6ee7b7;font-weight:700">DIGITAL VETTING</div>
-              <div style="font-size:0.95rem;font-weight:900;color:#34d399">&lt; 2 Seconds</div>
+              <div style="font-size:0.95rem;font-weight:900;color:#34d399" class="mono">&lt; 2 Seconds</div>
             </div>
             <div style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);padding:0.55rem;border-radius:0.45rem;text-align:center">
               <div style="font-size:0.65rem;color:#7dd3fc;font-weight:700">AOL VISIBILITY</div>
-              <div style="font-size:0.95rem;font-weight:900;color:#38bdf8">100% 24/7</div>
+              <div style="font-size:0.95rem;font-weight:900;color:#38bdf8" class="mono">100% 24/7</div>
             </div>
           </div>
         </div>
@@ -557,13 +781,14 @@ body {
               <span class="badge b-red" style="font-size:0.6rem">BEFORE (MANUAL)</span>
               <div style="font-size:0.8rem;font-weight:800;color:#ffffff;margin-top:0.15rem">Physical Paper Files</div>
               <p style="font-size:0.7rem;color:#94a3b8">Developer queues at counter with printed PE blueprints &amp; hardcopy forms.</p>
+              <div class="data-flow-line conveyor-track"><div class="data-packet data-packet-red"></div></div>
             </div>
             <div style="font-size:1.2rem;color:#34d399;font-weight:900">➔</div>
             <div style="border-left:2px solid #34d399;padding-left:0.5rem;background:rgba(52,211,153,0.06);padding:0.45rem 0.6rem;border-radius:0.4rem">
               <span class="badge b-green" style="font-size:0.6rem">AFTER (DIGITAL SUITE)</span>
               <div style="font-size:0.8rem;font-weight:800;color:#34d399;margin-top:0.15rem">24/7 Self-Service Web Portal</div>
               <p style="font-size:0.7rem;color:#cbd5e1">Instant online submission with MyKad SSO, PDF/CAD upload &amp; e-payment.</p>
-              <div class="mono" style="font-size:0.62rem;color:#60a5fa;margin-top:0.2rem">Tech: Next.js 14 · JWT Auth · FPX Gateway</div>
+              <div class="data-flow-line conveyor-track-green"><div class="data-packet data-packet-green"></div></div>
             </div>
           </div>
 
@@ -639,7 +864,7 @@ body {
       <div class="slide-body" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:0.85rem">
         
         <!-- A. CAAM Top Management -->
-        <div class="g-card g-card-glow-green" style="padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-green anim-fade-up anim-stagger-1" style="padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.5rem">🏛️</span>
@@ -666,7 +891,7 @@ body {
         </div>
 
         <!-- B. CAAM AGA Officers -->
-        <div class="g-card g-card-glow-cyan" style="padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-2" style="padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.5rem">👮‍♂️</span>
@@ -693,7 +918,7 @@ body {
         </div>
 
         <!-- C. Telcos & Developers -->
-        <div class="g-card g-card-glow-amber" style="padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-amber anim-fade-up anim-stagger-3" style="padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.5rem">🗼</span>
@@ -720,7 +945,7 @@ body {
         </div>
 
         <!-- D. Local Councils (PBTs) -->
-        <div class="g-card g-card-glow-purple" style="padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-purple anim-fade-up anim-stagger-4" style="padding:1rem 1.1rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.5rem">🏢</span>
@@ -769,11 +994,16 @@ body {
       <div class="slide-body" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.95rem">
         
         <!-- Story 1: The Pilot on Foggy Night -->
-        <div class="g-card g-card-glow-red" style="display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+        <div class="g-card g-card-glow-red anim-fade-up anim-stagger-1" style="display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
           <div>
             <div style="height:200px;position:relative">
               <img src="assets/story_pilot_night.jpg" alt="Pilot on Foggy Night" style="width:100%;height:100%;object-fit:cover">
               <div class="img-tag-top"><span class="pulse-dot" style="background:#f87171;box-shadow:0 0 8px #f87171"></span> SCENARIO 1 · THE AIRLINE PILOT</div>
+              
+              <!-- Simulated Blinking AOL Beacon & HUD reticle -->
+              <div style="position:absolute;top:28%;left:52%;transform:translate(-50%,-50%);z-index:3">
+                <span class="aol-beacon-live"></span>
+              </div>
             </div>
             <div style="padding:0.8rem 0.95rem">
               <h4 style="font-size:0.95rem;font-weight:900;color:#ffffff;margin-bottom:0.35rem">Night Landing in Low Visibility</h4>
@@ -801,11 +1031,12 @@ body {
         </div>
 
         <!-- Story 2: The CAAM Inspection Officer -->
-        <div class="g-card g-card-glow-cyan" style="display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+        <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-2" style="display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
           <div>
             <div style="height:200px;position:relative">
               <img src="assets/story_caam_officer.jpg" alt="CAAM Officer" style="width:100%;height:100%;object-fit:cover">
               <div class="img-tag-top"><span class="pulse-dot"></span> SCENARIO 2 · THE CAAM INSPECTOR</div>
+              <div class="laser-scanner-line"></div>
             </div>
             <div style="padding:0.8rem 0.95rem">
               <h4 style="font-size:0.95rem;font-weight:900;color:#ffffff;margin-bottom:0.35rem">Height Clearance Vetting</h4>
@@ -833,7 +1064,7 @@ body {
         </div>
 
         <!-- Story 3: The Telco Operator -->
-        <div class="g-card g-card-glow-green" style="display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
+        <div class="g-card g-card-glow-green anim-fade-up anim-stagger-3" style="display:flex;flex-direction:column;justify-content:space-between;overflow:hidden">
           <div>
             <div style="height:200px;position:relative">
               <img src="assets/story_telco_pemutihan.jpg" alt="Telco Pemutihan" style="width:100%;height:100%;object-fit:cover">
@@ -887,7 +1118,7 @@ body {
       <div class="slide-body" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.85rem">
         
         <!-- 1. Telco / 5G Towers -->
-        <div class="g-card g-card-glow-cyan" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-1" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.4rem">🗼</span>
@@ -921,7 +1152,7 @@ body {
         </div>
 
         <!-- 2. High-Rise Buildings -->
-        <div class="g-card g-card-glow-blue" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-blue anim-fade-up anim-stagger-2" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.4rem">🏢</span>
@@ -955,7 +1186,7 @@ body {
         </div>
 
         <!-- 3. Transmission Towers -->
-        <div class="g-card g-card-glow-green" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-green anim-fade-up anim-stagger-3" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.4rem">⚡</span>
@@ -988,7 +1219,7 @@ body {
         </div>
 
         <!-- 4. Construction Cranes -->
-        <div class="g-card g-card-glow-amber" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-amber anim-fade-up anim-stagger-1" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.4rem">🏗️</span>
@@ -1022,7 +1253,7 @@ body {
         </div>
 
         <!-- 5. Aviation Warning Lights -->
-        <div class="g-card g-card-glow-purple" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-purple anim-fade-up anim-stagger-2" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.4rem">🔴</span>
@@ -1056,7 +1287,7 @@ body {
         </div>
 
         <!-- 6. Special Assets -->
-        <div class="g-card" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card anim-fade-up anim-stagger-3" style="padding:0.95rem 1.15rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem">
               <span style="font-size:1.4rem">🏭</span>
@@ -1101,7 +1332,7 @@ body {
       <div class="slide-hdr">
         <div>
           <div class="slide-tag">System 1 in Detail · CAD 14 Vol. I (Issue 03 / Rev 01) · Chapter 4</div>
-          <h2 class="slide-title">3D OLS Spatial Engine — <span class="grad">Automated Ray-Tracing</span></h2>
+          <h2 class="slide-title">3D OLS Spatial Engine — <span class="grad">Automated Ray-Tracing Simulator</span></h2>
         </div>
         <div style="text-align:right">
           <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
@@ -1110,19 +1341,91 @@ body {
       </div>
 
       <div class="slide-body">
-        <div style="flex:1.1">
-          <div class="img-wrap" style="height:100%">
-            <img src="assets/ols3d.jpg" alt="CAD 14 3D OLS Model">
-            <div class="img-tag-top"><span class="pulse-dot"></span> POSTGIS 3D · SUB-2-SECOND SPATIAL RAY-TRACING</div>
-            <div class="img-caption-bar">
-              <h5>Automated 3D Obstacle Limitation Surface (OLS) Vetting</h5>
-              <p>Computes exact penetration depth down to the centimeter across all runway approaches, missed approach funnels, and horizontal surfaces.</p>
+        <!-- Left: Live Animated 3D OLS Simulator -->
+        <div style="flex:1.15;display:flex;flex-direction:column;gap:0.5rem">
+          <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-1" style="flex:1;min-height:310px;padding:0.75rem;position:relative;display:flex;flex-direction:column;justify-content:space-between;background:radial-gradient(circle at 50% 40%, rgba(14,165,233,0.12) 0%, rgba(3,7,18,0.95) 80%)">
+            
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span class="badge b-cyan" style="font-size:0.62rem"><span class="pulse-dot"></span> LIVE 3D OLS RAY-TRACER (POSTGIS ENGINE)</span>
+              <span class="mono" style="font-size:0.65rem;color:#38bdf8">WMKK RWY 32L / 14R</span>
             </div>
+
+            <!-- SVG 3D Aerodrome OLS Simulator Graphic -->
+            <div style="flex:1;position:relative;display:flex;align-items:center;justify-content:center;margin:0.4rem 0">
+              <svg viewBox="0 0 420 220" style="width:100%;height:100%;max-height:220px" xmlns="http://www.w3.org/2000/svg">
+                <!-- Grid Ground Plane -->
+                <defs>
+                  <linearGradient id="rwyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1e293b"/>
+                    <stop offset="50%" stop-color="#334155"/>
+                    <stop offset="100%" stop-color="#1e293b"/>
+                  </linearGradient>
+                  <linearGradient id="olsSlopeGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="rgba(56,189,248,0.15)"/>
+                    <stop offset="100%" stop-color="rgba(56,189,248,0.45)"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Ground Grid -->
+                <line x1="20" y1="180" x2="400" y2="180" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4,4"/>
+                <line x1="20" y1="150" x2="400" y2="150" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <line x1="20" y1="120" x2="400" y2="120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <line x1="20" y1="90" x2="400" y2="90" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+
+                <!-- Aerodrome Runway Strip -->
+                <polygon points="120,185 300,185 280,175 140,175" fill="url(#rwyGrad)" stroke="#64748b" stroke-width="1.5"/>
+                <!-- Runway Centerline Lights (Animated) -->
+                <line x1="145" y1="180" x2="275" y2="180" stroke="#facc15" stroke-width="2" stroke-dasharray="6,4"/>
+
+                <!-- CAD 14 3D OLS Surfaces Projection -->
+                <!-- 1. Approach Surface (2.0% Slope) -->
+                <polygon points="120,185 40,110 90,80 140,175" fill="rgba(56,189,248,0.2)" stroke="#38bdf8" stroke-width="1.5"/>
+                <!-- 2. Take-off Climb (2.0% Slope) -->
+                <polygon points="300,185 380,110 330,80 280,175" fill="rgba(52,211,153,0.2)" stroke="#34d399" stroke-width="1.5"/>
+                <!-- 3. Transitional Surface (1:7 Slope) -->
+                <polygon points="140,175 280,175 330,80 90,80" fill="rgba(192,132,252,0.2)" stroke="#c084fc" stroke-width="1.5"/>
+                <!-- 4. Inner Horizontal Surface (45m Flat Plane) -->
+                <polygon points="90,80 330,80 350,55 70,55" fill="rgba(251,191,36,0.15)" stroke="#fbbf24" stroke-width="1" stroke-dasharray="4,2"/>
+
+                <!-- Surface Labels -->
+                <text x="50" y="100" fill="#38bdf8" font-size="8" font-weight="bold" font-family="monospace">Approach (2%)</text>
+                <text x="315" y="100" fill="#34d399" font-size="8" font-weight="bold" font-family="monospace">Take-Off (2%)</text>
+                <text x="180" y="70" fill="#fbbf24" font-size="8" font-weight="bold" font-family="monospace">Inner Horizontal (45m MSL)</text>
+                <text x="175" y="130" fill="#c084fc" font-size="8" font-weight="bold" font-family="monospace">Transitional (1:7)</text>
+
+                <!-- Structure Under Test 1: SAFE BUILDING -->
+                <rect x="175" y="115" width="22" height="60" fill="rgba(52,211,153,0.3)" stroke="#34d399" stroke-width="1.5"/>
+                <!-- Probe Laser Beam 1 -->
+                <line x1="186" y1="180" x2="186" y2="78" stroke="#34d399" stroke-width="1.5" stroke-dasharray="2,2"/>
+                <circle cx="186" cy="115" r="4" fill="#34d399">
+                  <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <text x="155" y="110" fill="#86efac" font-size="8" font-weight="bold" font-family="monospace">🟢 88.5m SAFE (+21.5m)</text>
+
+                <!-- Structure Under Test 2: BREACH PENETRATION -->
+                <rect x="250" y="65" width="20" height="110" fill="rgba(248,113,113,0.35)" stroke="#f87171" stroke-width="1.5"/>
+                <!-- Probe Laser Beam 2 -->
+                <line x1="260" y1="180" x2="260" y2="55" stroke="#f87171" stroke-width="1.5" stroke-dasharray="2,2"/>
+                <circle cx="260" cy="65" r="4" fill="#f87171">
+                  <animate attributeName="r" values="3;7;3" dur="1.2s" repeatCount="indefinite"/>
+                </circle>
+                <text x="240" y="50" fill="#fca5a5" font-size="8" font-weight="bold" font-family="monospace">🔴 145.0m BREACH (-15m)</text>
+              </svg>
+            </div>
+
+            <!-- Live HUD Readout Ribbon -->
+            <div style="background:rgba(0,0,0,0.5);padding:0.4rem 0.6rem;border-radius:0.35rem;border:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;font-size:0.66rem">
+              <span class="mono" style="color:#cbd5e1">LAT: <strong>2.7432°N</strong> | LON: <strong>101.6982°E</strong></span>
+              <span class="badge b-green" style="font-size:0.6rem">CAD 14 CHAPTER 4 COMPLIANT</span>
+              <span class="mono" style="color:#38bdf8">LATENCY: <strong>18ms</strong></span>
+            </div>
+
           </div>
         </div>
 
+        <!-- Right: The 8 Surfaces Breakdown -->
         <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
-          <div class="g-card" style="padding:0.95rem 1.15rem">
+          <div class="g-card anim-fade-up anim-stagger-2" style="padding:0.95rem 1.15rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.45rem">
               <h4 style="font-size:0.94rem;font-weight:800;color:#38bdf8">📐 The 8 Statutory CAD 14 Chapter 4 Surfaces Calculated:</h4>
               <span class="badge b-cyan" style="font-size:0.65rem">PostGIS ST_3DIntersects()</span>
@@ -1155,7 +1458,7 @@ body {
             </div>
           </div>
 
-          <div class="g-card g-card-glow-green" style="padding:0.95rem 1.15rem">
+          <div class="g-card g-card-glow-green anim-fade-up anim-stagger-3" style="padding:0.95rem 1.15rem">
             <h4 style="font-size:0.9rem;font-weight:800;color:#34d399;margin-bottom:0.35rem">⚡ Instant Height Limitation Vetting Workflow</h4>
             <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.5">
               Applicant inputs Latitude, Longitude, Ground Level (GL), and Proposed Height. The system combines digital elevation models (SRTM/LiDAR) with 3D CAD 14 surfaces to deliver an immediate <strong>Approved Height Clearance Certificate</strong> or <strong>Prescribed Mitigation Notice</strong>.
@@ -1186,19 +1489,61 @@ body {
       </div>
 
       <div class="slide-body">
-        <div style="flex:1.1">
-          <div class="img-wrap" style="height:100%">
-            <img src="assets/aol_iot_telemetry.jpg" alt="AOL IoT Telemetry">
-            <div class="img-tag-top"><span class="pulse-dot"></span> LIVE SENSOR HEARTBEAT · NB-IOT &amp; GSM PROTOCOL</div>
-            <div class="img-caption-bar">
-              <h5>IoT Smart Sensor Integration on Tower Beacons</h5>
-              <p>Continuous monitoring of light status (Active/Inactive), Lux output, flashing cadence, solar battery voltage, and mains power health.</p>
+        <!-- Left: Live Animated Telemetry & NOTAM Pipeline -->
+        <div style="flex:1.15;display:flex;flex-direction:column;gap:0.5rem">
+          <div class="g-card g-card-glow-red anim-fade-up anim-stagger-1" style="flex:1;min-height:310px;padding:0.85rem;position:relative;display:flex;flex-direction:column;justify-content:space-between;background:radial-gradient(circle at 50% 30%, rgba(239,68,68,0.12) 0%, rgba(3,7,18,0.95) 80%)">
+            
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <span class="badge b-red" style="font-size:0.62rem"><span class="pulse-dot" style="background:#ef4444;box-shadow:0 0 8px #ef4444"></span> LIVE TOWER BEACON TELEMETRY PIPELINE</span>
+              <span class="mono" style="font-size:0.65rem;color:#fca5a5">TOWER ID: WM-TW-091</span>
             </div>
+
+            <!-- Tower & Wireless Telemetry Animation -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;align-items:center;margin:0.5rem 0">
+              
+              <!-- Tower Graphic with Flashing Beacon -->
+              <div style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.06);border-radius:0.5rem;padding:0.75rem;text-align:center;position:relative">
+                <div style="margin-bottom:0.35rem">
+                  <span class="aol-beacon-live"></span>
+                </div>
+                <div style="font-size:0.82rem;font-weight:800;color:#ffffff">120m Telco Mast</div>
+                <div class="mono" style="font-size:0.66rem;color:#fca5a5">Type B (2,000 cd Red)</div>
+                <div style="margin-top:0.4rem;font-size:0.68rem;color:#cbd5e1">
+                  💡 Lux Sensor: <strong style="color:#34d399">2,150 cd (PASS)</strong><br>
+                  🔋 Solar Battery: <strong style="color:#38bdf8">27.4V (NORMAL)</strong>
+                </div>
+              </div>
+
+              <!-- Automated NOTAM & ATC Dispatch Engine -->
+              <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:0.5rem;padding:0.75rem;position:relative">
+                <div class="radio-wave-node" style="margin-bottom:0.25rem">
+                  <span class="radio-wave-circle"></span>
+                  <span class="radio-wave-circle"></span>
+                  <span style="font-size:1.3rem">📡</span>
+                </div>
+                <div style="font-size:0.8rem;font-weight:800;color:#ffffff;margin-top:0.2rem">60s NOTAM Dispatch</div>
+                <div class="mono" style="font-size:0.66rem;color:#38bdf8">SLA: Sub-2s Fault Trip</div>
+                <div style="margin-top:0.35rem;font-size:0.67rem;color:#fca5a5">
+                  🚨 Outage Trigger ➔ Instant AFTN Notice to KLATCC &amp; Subang Radar.
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Live MQTT Stream Bar -->
+            <div style="background:rgba(0,0,0,0.5);padding:0.45rem 0.65rem;border-radius:0.35rem;border:1px solid rgba(255,255,255,0.08)">
+              <div style="display:flex;justify-content:space-between;font-size:0.65rem;margin-bottom:0.2rem" class="mono">
+                <span style="color:#94a3b8">PROTOCOL: MQTT / TLS 1.3</span>
+                <span style="color:#34d399">STATUS: 24/7 SENSOR HEARTBEAT ACTIVE</span>
+              </div>
+              <div class="data-flow-line"><div class="data-packet"></div></div>
+            </div>
+
           </div>
         </div>
 
         <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
-          <div class="g-card g-card-glow-cyan" style="padding:1rem">
+          <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-2" style="padding:1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
               <h4 style="font-size:0.95rem;font-weight:800;color:#38bdf8">🔴 CAD 14 AOL Technical Standards Ingested:</h4>
               <span class="badge b-cyan" style="font-size:0.65rem">MQTT over NB-IoT</span>
@@ -1223,7 +1568,7 @@ body {
             </div>
           </div>
 
-          <div class="g-card g-card-glow-red" style="padding:1rem">
+          <div class="g-card g-card-glow-red anim-fade-up anim-stagger-3" style="padding:1rem">
             <h4 style="font-size:0.95rem;font-weight:800;color:#fca5a5;margin-bottom:0.35rem">⚖️ Automated Section 24O(2) Statutory Enforcement Engine</h4>
             <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.5">
               When an AOL failure occurs in an active flight approach path:
@@ -1257,10 +1602,10 @@ body {
       </div>
 
       <div class="slide-body" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:0.85rem">
-        <div class="g-card g-card-glow-cyan" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-1" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="font-size:1.7rem;margin-bottom:0.4rem">💻</div>
-            <span class="badge b-cyan" style="margin-bottom:0.4rem">Frontend Stack</span>
+            <span class="badge b-cyan" style="margin-bottom:0.4rem">Tier 1: Client Edge</span>
             <h4 style="font-size:0.98rem;font-weight:800;color:#ffffff;margin-bottom:0.35rem">Next.js &amp; React</h4>
             <ul style="list-style:none;font-size:0.76rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.25rem">
               <li>✓ Next.js 14 App Router</li>
@@ -1270,13 +1615,14 @@ body {
               <li>✓ Mobile PWA Support</li>
             </ul>
           </div>
-          <div class="mono" style="font-size:0.7rem;color:#38bdf8;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">UI/UX: Art &amp; Asset Engine</div>
+          <div class="data-flow-line"><div class="data-packet"></div></div>
+          <div class="mono" style="font-size:0.7rem;color:#38bdf8;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">Edge Latency: &lt; 25ms</div>
         </div>
 
-        <div class="g-card g-card-glow-blue" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-blue anim-fade-up anim-stagger-2" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="font-size:1.7rem;margin-bottom:0.4rem">⚙️</div>
-            <span class="badge b-blue" style="margin-bottom:0.4rem">Backend Engine</span>
+            <span class="badge b-blue" style="margin-bottom:0.4rem">Tier 2: API Gateway</span>
             <h4 style="font-size:0.98rem;font-weight:800;color:#ffffff;margin-bottom:0.35rem">Core Services</h4>
             <ul style="list-style:none;font-size:0.76rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.25rem">
               <li>✓ Multi-Tenant Auth (RBAC)</li>
@@ -1286,13 +1632,14 @@ body {
               <li>✓ Automated Notification Queue</li>
             </ul>
           </div>
+          <div class="data-flow-line"><div class="data-packet"></div></div>
           <div class="mono" style="font-size:0.7rem;color:#60a5fa;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">API: REST &amp; WebSocket</div>
         </div>
 
-        <div class="g-card g-card-glow-green" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-green anim-fade-up anim-stagger-3" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="font-size:1.7rem;margin-bottom:0.4rem">🗄️</div>
-            <span class="badge b-green" style="margin-bottom:0.4rem">Database Layer</span>
+            <span class="badge b-green" style="margin-bottom:0.4rem">Tier 3: Spatial Core</span>
             <h4 style="font-size:0.98rem;font-weight:800;color:#ffffff;margin-bottom:0.35rem">MySQL &amp; PostGIS</h4>
             <ul style="list-style:none;font-size:0.76rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.25rem">
               <li>✓ Master Structure Registry</li>
@@ -1302,13 +1649,14 @@ body {
               <li>✓ Encrypted Document Vault</li>
             </ul>
           </div>
+          <div class="data-flow-line"><div class="data-packet data-packet-green"></div></div>
           <div class="mono" style="font-size:0.7rem;color:#34d399;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">Hosting: MyGovCloud Sovereign</div>
         </div>
 
-        <div class="g-card g-card-glow-purple" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card g-card-glow-purple anim-fade-up anim-stagger-4" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
           <div>
             <div style="font-size:1.7rem;margin-bottom:0.4rem">🛡️</div>
-            <span class="badge b-purple" style="margin-bottom:0.4rem">Security &amp; Compliance</span>
+            <span class="badge b-purple" style="margin-bottom:0.4rem">Tier 4: Trust &amp; Security</span>
             <h4 style="font-size:0.98rem;font-weight:800;color:#ffffff;margin-bottom:0.35rem">Enterprise Security</h4>
             <ul style="list-style:none;font-size:0.76rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.25rem">
               <li>✓ PDPA Act 709 Compliant</li>
@@ -1318,6 +1666,7 @@ body {
               <li>✓ Comprehensive Audit Logs</li>
             </ul>
           </div>
+          <div class="data-flow-line"><div class="data-packet"></div></div>
           <div class="mono" style="font-size:0.7rem;color:#c084fc;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">Security: ISO 27001 Aligned</div>
         </div>
       </div>
@@ -1342,7 +1691,7 @@ body {
 
       <div class="slide-body" style="display:flex;gap:1.2rem">
         <div style="flex:1;display:flex;flex-direction:column;gap:0.55rem">
-          <div class="g-card" style="padding:0.75rem 1rem">
+          <div class="g-card anim-fade-up anim-stagger-1" style="padding:0.75rem 1rem">
             <div style="display:flex;align-items:center;gap:0.6rem">
               <span class="badge b-cyan" style="font-size:0.7rem">1</span>
               <div>
@@ -1352,7 +1701,7 @@ body {
             </div>
           </div>
 
-          <div class="g-card" style="padding:0.75rem 1rem">
+          <div class="g-card anim-fade-up anim-stagger-2" style="padding:0.75rem 1rem">
             <div style="display:flex;align-items:center;gap:0.6rem">
               <span class="badge b-green" style="font-size:0.7rem">2</span>
               <div>
@@ -1362,7 +1711,7 @@ body {
             </div>
           </div>
 
-          <div class="g-card" style="padding:0.75rem 1rem">
+          <div class="g-card anim-fade-up anim-stagger-3" style="padding:0.75rem 1rem">
             <div style="display:flex;align-items:center;gap:0.6rem">
               <span class="badge b-amber" style="font-size:0.7rem">3</span>
               <div>
@@ -1372,7 +1721,7 @@ body {
             </div>
           </div>
 
-          <div class="g-card" style="padding:0.75rem 1rem">
+          <div class="g-card anim-fade-up anim-stagger-4" style="padding:0.75rem 1rem">
             <div style="display:flex;align-items:center;gap:0.6rem">
               <span class="badge b-purple" style="font-size:0.7rem">4</span>
               <div>
@@ -1382,7 +1731,7 @@ body {
             </div>
           </div>
 
-          <div class="g-card" style="padding:0.75rem 1rem">
+          <div class="g-card anim-fade-up anim-stagger-5" style="padding:0.75rem 1rem">
             <div style="display:flex;align-items:center;gap:0.6rem">
               <span class="badge b-blue" style="font-size:0.7rem">5</span>
               <div>
@@ -1394,7 +1743,7 @@ body {
         </div>
 
         <div style="flex:1.3">
-          <div class="img-wrap" style="height:100%">
+          <div class="img-wrap anim-fade-up anim-stagger-2" style="height:100%">
             <img src="assets/dashboard.jpg" alt="Master List Screen">
             <div class="img-tag-top"><span class="pulse-dot"></span> MASTER LIST &amp; APPLICATION STATUS DASHBOARD</div>
             <div class="img-caption-bar">
@@ -1425,8 +1774,22 @@ body {
 
       <div class="slide-body" style="display:grid;grid-template-columns:1.15fr 1.25fr;gap:1.1rem">
         <div style="display:flex;flex-direction:column;gap:0.65rem">
-          <div class="img-wrap" style="flex:1;min-height:320px">
+          <div class="img-wrap anim-fade-up anim-stagger-1" style="flex:1;min-height:320px;position:relative">
             <img src="assets/gis_command_center.jpg" alt="National Airspace GIS Command Center">
+            
+            <!-- Radar Scanner Overlay -->
+            <div style="position:absolute;top:15px;right:15px;width:110px;height:110px;z-index:4;pointer-events:none">
+              <div class="radar-scanner">
+                <div class="radar-ring" style="width:75%;height:75%"></div>
+                <div class="radar-ring" style="width:40%;height:40%"></div>
+                <div class="radar-crosshair-h"></div>
+                <div class="radar-crosshair-v"></div>
+                <div class="radar-ping-dot" style="top:25%;left:70%"></div>
+                <div class="radar-ping-dot" style="top:60%;left:30%;animation-delay:0.8s"></div>
+                <div class="radar-ping-dot" style="top:75%;left:65%;animation-delay:1.5s;background:#ef4444"></div>
+              </div>
+            </div>
+
             <div class="img-tag-top"><span class="pulse-dot"></span> 3D DIGITAL TWIN · 615,000 VERTICAL STRUCTURES</div>
             <div class="img-caption-bar">
               <h5>Real-Time Multi-Screen Airspace Surveillance</h5>
@@ -1447,7 +1810,7 @@ body {
 
         <div style="display:flex;flex-direction:column;gap:0.55rem;justify-content:space-between">
           <!-- Card 1: Unified National Spatial Database -->
-          <div class="g-card g-card-glow-cyan" style="padding:0.85rem 1rem">
+          <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-2" style="padding:0.85rem 1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
               <h4 style="font-size:0.92rem;font-weight:800;color:#38bdf8">🗺️ Unified National Spatial Database</h4>
               <span class="badge b-cyan" style="font-size:0.62rem">PostGIS Spatial Index</span>
@@ -1464,7 +1827,7 @@ body {
           </div>
 
           <!-- Card 2: Interactive Inspector Console -->
-          <div class="g-card g-card-glow-blue" style="padding:0.85rem 1rem">
+          <div class="g-card g-card-glow-blue anim-fade-up anim-stagger-3" style="padding:0.85rem 1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
               <h4 style="font-size:0.92rem;font-weight:800;color:#60a5fa">🔍 Aerodrome Inspector Command Console</h4>
               <span class="badge b-blue" style="font-size:0.62rem">3D Ray-Tracing View</span>
@@ -1476,7 +1839,7 @@ body {
           </div>
 
           <!-- Card 3: Automated Billing & Revenue Ledger -->
-          <div class="g-card g-card-glow-green" style="padding:0.85rem 1rem">
+          <div class="g-card g-card-glow-green anim-fade-up anim-stagger-4" style="padding:0.85rem 1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
               <h4 style="font-size:0.92rem;font-weight:800;color:#34d399">💳 Automated Billing &amp; Revenue Ledger</h4>
               <span class="badge b-green" style="font-size:0.62rem">FPX / DuitNow Gateway</span>
@@ -1509,7 +1872,7 @@ body {
 
       <div class="slide-body">
         <div style="flex:1.1">
-          <div class="img-wrap" style="height:100%">
+          <div class="img-wrap anim-fade-up anim-stagger-1" style="height:100%">
             <img src="assets/ops_transformation.jpg" alt="Program Pemutihan">
             <div class="img-tag-top"><span class="pulse-dot"></span> BULK ASSET INGESTION · GREENFIELD &amp; BROWNFIELD</div>
             <div class="img-caption-bar">
@@ -1520,7 +1883,7 @@ body {
         </div>
 
         <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
-          <div class="g-card g-card-glow-amber" style="padding:1.1rem">
+          <div class="g-card g-card-glow-amber anim-fade-up anim-stagger-2" style="padding:1.1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
               <h4 style="font-size:0.98rem;font-weight:800;color:#fbbf24">🏢 Greenfield (New) vs Brownfield (Existing)</h4>
               <span class="badge b-amber">Two-Track Onboarding</span>
@@ -1537,7 +1900,7 @@ body {
             </div>
           </div>
 
-          <div class="g-card g-card-glow-cyan" style="padding:1.1rem">
+          <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-3" style="padding:1.1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
               <h4 style="font-size:0.98rem;font-weight:800;color:#38bdf8">📦 Bulk Enterprise Ingestion Tools</h4>
               <span class="badge b-cyan">Batch GeoJSON / KML</span>
@@ -1547,7 +1910,7 @@ body {
             </p>
           </div>
 
-          <div style="padding:0.85rem 1.1rem;background:rgba(52,211,153,0.1);border-radius:0.55rem;border:1px solid rgba(52,211,153,0.3);font-size:0.82rem;color:#6ee7b7;font-weight:700">
+          <div class="anim-fade-up anim-stagger-4" style="padding:0.85rem 1.1rem;background:rgba(52,211,153,0.1);border-radius:0.55rem;border:1px solid rgba(52,211,153,0.3);font-size:0.82rem;color:#6ee7b7;font-weight:700">
             ✅ Delivers 100% statutory legal compliance under Section 24O while creating an immediate multi-million ringgit revenue inflow for CAAM.
           </div>
         </div>
@@ -1573,7 +1936,7 @@ body {
 
       <div class="slide-body" style="display:grid;grid-template-columns:1.15fr 1.25fr;gap:1.1rem">
         <div style="display:flex;flex-direction:column;gap:0.65rem">
-          <div class="img-wrap" style="flex:1;min-height:320px">
+          <div class="img-wrap anim-fade-up anim-stagger-1" style="flex:1;min-height:320px">
             <img src="assets/pbt_interagency_gateway.jpg" alt="PBT Inter-Agency Gateway">
             <div class="img-tag-top"><span class="pulse-dot"></span> INTER-AGENCY DATA BRIDGE · REST API &amp; OAUTH 2.0</div>
             <div class="img-caption-bar">
@@ -1595,7 +1958,7 @@ body {
 
         <div style="display:flex;flex-direction:column;gap:0.55rem;justify-content:space-between">
           <!-- Card 1: KPKT OSC 3.0+ Integration -->
-          <div class="g-card g-card-glow-green" style="padding:0.85rem 1rem">
+          <div class="g-card g-card-glow-green anim-fade-up anim-stagger-2" style="padding:0.85rem 1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
               <h4 style="font-size:0.92rem;font-weight:800;color:#34d399">🏛️ KPKT One-Stop Centre (OSC 3.0+) Integration</h4>
               <span class="badge b-green" style="font-size:0.62rem">Automated Gatekeeper</span>
@@ -1607,7 +1970,7 @@ body {
           </div>
 
           <!-- Card 2: MCMC Spectrum & Tower Sync -->
-          <div class="g-card g-card-glow-blue" style="padding:0.85rem 1rem">
+          <div class="g-card g-card-glow-blue anim-fade-up anim-stagger-3" style="padding:0.85rem 1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
               <h4 style="font-size:0.92rem;font-weight:800;color:#60a5fa">📡 MCMC Spectrum &amp; Tower License Cross-Check</h4>
               <span class="badge b-blue" style="font-size:0.62rem">MCMC Sync</span>
@@ -1619,7 +1982,7 @@ body {
           </div>
 
           <!-- Card 3: Statutory Audit Trail & Evidence Locker -->
-          <div class="g-card g-card-glow-purple" style="padding:0.85rem 1rem">
+          <div class="g-card g-card-glow-purple anim-fade-up anim-stagger-4" style="padding:0.85rem 1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
               <h4 style="font-size:0.92rem;font-weight:800;color:#c084fc">🔒 Statutory Digital Signature &amp; Evidence Locker</h4>
               <span class="badge b-purple" style="font-size:0.62rem">Act 560 Compliant</span>
@@ -1652,29 +2015,35 @@ body {
 
       <div class="slide-body">
         <div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">
-          <div class="g-card g-card-glow-green" style="padding:1.1rem">
+          <!-- Animated Revenue Split Card -->
+          <div class="g-card g-card-glow-green anim-fade-up anim-stagger-1" style="padding:1.1rem">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
               <span class="badge b-green">Revenue Sharing Ratio</span>
               <span style="font-size:0.78rem;color:#34d399;font-weight:800">PPP Framework</span>
             </div>
+            
+            <!-- Animated Waterfall Split Visual -->
             <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:0.7rem">
-              <div style="text-align:center;padding:0.7rem 1.2rem;background:rgba(52,211,153,0.15);border-radius:0.6rem;border:1px solid #34d399">
+              <div style="flex:1;text-align:center;padding:0.7rem;background:rgba(52,211,153,0.15);border-radius:0.6rem;border:1px solid #34d399;position:relative">
                 <div style="font-size:1.8rem;font-weight:900;color:#34d399">80%</div>
                 <div style="font-size:0.72rem;font-weight:700;color:#ffffff">CAAM SHARE</div>
+                <div class="meter-fill" style="margin-top:0.4rem;background:#34d399;width:80%;height:4px;border-radius:2px"></div>
               </div>
-              <div style="font-size:1.4rem;color:#94a3b8">:</div>
-              <div style="text-align:center;padding:0.7rem 1.2rem;background:rgba(56,189,248,0.15);border-radius:0.6rem;border:1px solid #38bdf8">
+              <div style="font-size:1.4rem;color:#94a3b8;font-weight:bold">:</div>
+              <div style="flex:0.6;text-align:center;padding:0.7rem;background:rgba(56,189,248,0.15);border-radius:0.6rem;border:1px solid #38bdf8;position:relative">
                 <div style="font-size:1.8rem;font-weight:900;color:#38bdf8">20%</div>
                 <div style="font-size:0.72rem;font-weight:700;color:#ffffff">PMT / C EDGE</div>
+                <div class="meter-fill" style="margin-top:0.4rem;background:#38bdf8;width:20%;height:4px;border-radius:2px"></div>
               </div>
             </div>
+
             <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45">
               • <strong>Revenue Streams:</strong> Legalization Fees (Pemutihan) + Annual Renewals.<br>
               • <strong>Scope Included:</strong> Turnkey E-Application Portal, PMT technical operations, 24/7 server hosting, and maintenance.
             </p>
           </div>
 
-          <div class="g-card" style="padding:0.95rem">
+          <div class="g-card anim-fade-up anim-stagger-2" style="padding:0.95rem">
             <h4 style="font-size:0.9rem;font-weight:800;color:#38bdf8;margin-bottom:0.4rem">Initial Year 1 Financials (PDF Page 27):</h4>
             <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.78rem">
               <div style="display:flex;justify-content:space-between;padding:0.3rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
@@ -1698,7 +2067,7 @@ body {
         </div>
 
         <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
-          <div class="g-card" style="padding:1rem;flex:1">
+          <div class="g-card anim-fade-up anim-stagger-2" style="padding:1rem;flex:1">
             <h4 style="font-size:0.92rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Year 1 Cashflow Details (From SOLUTIONS_FOR_CAAM.pdf)</h4>
             <table class="c-table">
               <thead>
@@ -1778,8 +2147,16 @@ body {
 
       <div class="slide-body">
         <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
-          <div class="g-card" style="padding:0.95rem;flex:1">
+          <div class="g-card anim-fade-up anim-stagger-1" style="padding:0.95rem;flex:1">
             <h4 style="font-size:0.9rem;font-weight:800;color:#38bdf8;margin-bottom:0.4rem">Mature Annual Revenue Breakdown (Years 6 to 10):</h4>
+            <svg viewBox="0 0 400 150" style="width:100%;height:150px;margin-bottom:1rem">
+              <rect x="20" y="80" width="40" height="70" fill="#38bdf8" />
+              <rect x="80" y="60" width="40" height="90" fill="#60a5fa" />
+              <rect x="140" y="30" width="40" height="120" fill="#34d399" />
+              <rect x="200" y="100" width="40" height="50" fill="#f87171" />
+              <rect x="260" y="10" width="40" height="140" fill="#fbbf24" />
+              <rect x="320" y="100" width="40" height="50" fill="#c084fc" />
+            </svg>
             <table class="c-table">
               <thead>
                 <tr>
@@ -1838,7 +2215,7 @@ body {
         </div>
 
         <div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">
-          <div class="g-card g-card-glow-green" style="padding:1.1rem">
+          <div class="g-card g-card-glow-green anim-fade-up anim-stagger-2" style="padding:1.1rem">
             <h4 style="font-size:0.95rem;font-weight:800;color:#34d399;margin-bottom:0.5rem">Annual Operating Expenses vs Net Surplus:</h4>
             <div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.78rem">
               <div style="display:flex;justify-content:space-between;padding:0.35rem 0.6rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
@@ -1859,7 +2236,8 @@ body {
               </div>
             </div>
 
-            <div style="margin-top:0.85rem;padding:0.85rem;background:linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.1));border-radius:0.6rem;border:1px solid #34d399;text-align:center">
+            <div style="margin-top:0.85rem;padding:0.85rem;background:linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.1));border-radius:0.6rem;border:1px solid #34d399;text-align:center;position:relative;overflow:hidden">
+              <div class="laser-scanner-line" style="position:absolute;top:0;left:0;width:100%;height:2px;background:#fff;animation:scan 2s infinite"></div>
               <div style="font-size:0.74rem;font-weight:800;color:#6ee7b7;text-transform:uppercase">NET ANNUAL ENDING BANK BALANCE TO CAAM</div>
               <div style="font-size:1.8rem;font-weight:900;color:#ffffff;margin:0.2rem 0">RM 156,945,000</div>
               <div style="font-size:0.72rem;color:#cbd5e1">Every Year (Years 6 to 10)</div>
@@ -1888,7 +2266,7 @@ body {
 
       <div class="slide-body">
         <div style="flex:1;display:grid;grid-template-columns:repeat(4, 1fr);gap:1rem">
-          <div class="g-card g-card-glow-cyan" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-1" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
                 <span class="badge b-cyan">MONTH 1</span>
@@ -1902,10 +2280,11 @@ body {
                 <li>• Database schema definition</li>
               </ul>
             </div>
+            <div class="data-flow-line" style="height:4px;background:#1e293b;border-radius:2px;margin:1rem 0;position:relative"><div class="data-packet" style="width:20px;height:4px;background:#38bdf8;position:absolute;animation:flow 2s infinite"></div></div>
             <div class="mono" style="font-size:0.7rem;color:#38bdf8;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">Deliverable: SOW &amp; FRS Spec</div>
           </div>
 
-          <div class="g-card g-card-glow-blue" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="g-card g-card-glow-blue anim-fade-up anim-stagger-2" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
                 <span class="badge b-blue">MONTH 2</span>
@@ -1919,10 +2298,11 @@ body {
                 <li>• Frontend scaffold (Next.js &amp; Tailwind)</li>
               </ul>
             </div>
+            <div class="data-flow-line" style="height:4px;background:#1e293b;border-radius:2px;margin:1rem 0;position:relative"><div class="data-packet" style="width:20px;height:4px;background:#60a5fa;position:absolute;animation:flow 2s infinite"></div></div>
             <div class="mono" style="font-size:0.7rem;color:#60a5fa;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">Deliverable: Interactive UI Mockup</div>
           </div>
 
-          <div class="g-card g-card-glow-green" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="g-card g-card-glow-green anim-fade-up anim-stagger-3" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
                 <span class="badge b-green">MONTH 3</span>
@@ -1936,10 +2316,11 @@ body {
                 <li>• Correspondence Letter Generation</li>
               </ul>
             </div>
+            <div class="data-flow-line" style="height:4px;background:#1e293b;border-radius:2px;margin:1rem 0;position:relative"><div class="data-packet" style="width:20px;height:4px;background:#34d399;position:absolute;animation:flow 2s infinite"></div></div>
             <div class="mono" style="font-size:0.7rem;color:#34d399;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">Deliverable: Alpha Functional System</div>
           </div>
 
-          <div class="g-card g-card-glow-purple" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="g-card g-card-glow-purple anim-fade-up anim-stagger-4" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
                 <span class="badge b-purple">MONTH 4</span>
@@ -1953,6 +2334,7 @@ body {
                 <li>• User Acceptance Testing (UAT) &amp; Go-Live</li>
               </ul>
             </div>
+            <div class="data-flow-line" style="height:4px;background:#1e293b;border-radius:2px;margin:1rem 0;position:relative"><div class="data-packet" style="width:20px;height:4px;background:#c084fc;position:absolute;animation:flow 2s infinite"></div></div>
             <div class="mono" style="font-size:0.7rem;color:#c084fc;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem">Deliverable: 100% Production Go-Live</div>
           </div>
         </div>
@@ -1981,7 +2363,7 @@ body {
         <!-- Row 1: 4 Strategic Value Impact Pillars -->
         <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:0.75rem;flex:1">
           
-          <div class="g-card g-card-glow-green" style="padding:0.95rem 1.15rem;border-left:3px solid #34d399;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="g-card g-card-glow-green anim-fade-up anim-stagger-1" style="padding:0.95rem 1.15rem;border-left:3px solid #34d399;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
                 <span style="font-size:1.3rem">⚖️</span>
@@ -1994,7 +2376,7 @@ body {
             <div style="font-size:0.72rem;color:#34d399;font-weight:700;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.3rem">✓ Full Statutory Legal Shield</div>
           </div>
 
-          <div class="g-card g-card-glow-cyan" style="padding:0.95rem 1.15rem;border-left:3px solid #38bdf8;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="g-card g-card-glow-cyan anim-fade-up anim-stagger-2" style="padding:0.95rem 1.15rem;border-left:3px solid #38bdf8;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
                 <span style="font-size:1.3rem">💰</span>
@@ -2007,7 +2389,7 @@ body {
             <div style="font-size:0.72rem;color:#38bdf8;font-weight:700;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.3rem">✓ Guaranteed CAAM Cashflow</div>
           </div>
 
-          <div class="g-card g-card-glow-amber" style="padding:0.95rem 1.15rem;border-left:3px solid #fbbf24;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="g-card g-card-glow-amber anim-fade-up anim-stagger-3" style="padding:0.95rem 1.15rem;border-left:3px solid #fbbf24;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
                 <span style="font-size:1.3rem">🔴</span>
@@ -2020,7 +2402,7 @@ body {
             <div style="font-size:0.72rem;color:#fbbf24;font-weight:700;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.3rem">✓ ICAO Annex 14 &amp; CAD 14 Ch 6</div>
           </div>
 
-          <div class="g-card g-card-glow-purple" style="padding:0.95rem 1.15rem;border-left:3px solid #c084fc;display:flex;flex-direction:column;justify-content:space-between">
+          <div class="g-card g-card-glow-purple anim-fade-up anim-stagger-4" style="padding:0.95rem 1.15rem;border-left:3px solid #c084fc;display:flex;flex-direction:column;justify-content:space-between">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
                 <span style="font-size:1.3rem">⚡</span>
@@ -2036,7 +2418,7 @@ body {
         </div>
 
         <!-- Row 2: 3-Phase Immediate Execution Chevron Workflow -->
-        <div class="g-card" style="padding:1rem 1.35rem;background:rgba(8, 16, 32, 0.95);border:1px solid rgba(56, 189, 248, 0.35);flex:1.2;display:flex;flex-direction:column;justify-content:space-between">
+        <div class="g-card anim-fade-up anim-stagger-3" style="padding:1rem 1.35rem;background:rgba(8, 16, 32, 0.95);border:1px solid rgba(56, 189, 248, 0.35);flex:1.2;display:flex;flex-direction:column;justify-content:space-between">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
             <span style="font-size:0.8rem;font-weight:800;color:#38bdf8;text-transform:uppercase;letter-spacing:0.06em">
               🚀 Immediate 3-Phase Execution Roadmap for Joint Tabling
@@ -2095,7 +2477,7 @@ body {
         </div>
 
         <!-- Row 3: Executive Partnership Sign-off Dossier -->
-        <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:0.85rem;align-items:stretch;flex:1">
+        <div class="anim-fade-up anim-stagger-4" style="display:grid;grid-template-columns:1fr 1fr auto;gap:0.85rem;align-items:stretch;flex:1">
           
           <!-- Presenter Dossier Card -->
           <div class="g-card" style="padding:0.95rem 1.2rem;display:flex;align-items:center;gap:1.1rem;background:rgba(15, 23, 42, 0.9)">
