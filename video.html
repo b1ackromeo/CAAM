@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAAM 2030: Video Keynote Presentation — Suria Ramadhan for En. Zarwavai Suratman (C Edge Sdn Bhd)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #060b13;
+  --bg-card: rgba(15, 23, 42, 0.75);
+  --border-cyan: rgba(56, 189, 248, 0.25);
+  --cyan: #38bdf8;
+  --green: #34d399;
+  --purple: #c084fc;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Outfit', sans-serif;
+}
+
+body {
+  background: var(--bg-primary);
+  color: #f8fafc;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.5rem;
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-cyan);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+}
+
+.title-area h1 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.title-area p {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  margin-top: 0.2rem;
+}
+
+.author-pill {
+  padding: 0.45rem 1rem;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 2rem;
+  font-size: 0.82rem;
+  color: #e2e8f0;
+}
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #000;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.controls-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-cyan);
+  border-radius: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.3rem;
+  border-radius: 0.6rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+}
+
+.btn-whatsapp {
+  background: linear-gradient(135deg, #059669, #10b981);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="title-area">
+      <h1>CAAM 2030: Video Keynote Presentation</h1>
+      <p>Full 20-Slide Video Keynote with Executive Female Voiceover Narration</p>
+    </div>
+    <div class="author-pill">
+      👤 <strong>Suria Ramadhan</strong> for <strong style="color:#34d399">En. Zarwavai Suratman (C Edge Sdn Bhd)</strong>
+    </div>
+  </div>
+
+  <div class="video-wrapper">
+    <video controls autoplay poster="assets/dashboard.jpg">
+      <source src="CAAM_2030_Presentation.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div class="controls-card">
+    <div>
+      <div style="font-size:1.05rem;font-weight:800;color:#ffffff">CAAM_2030_Presentation.mp4</div>
+      <div style="font-size:0.8rem;color:#94a3b8;margin-top:0.2rem">20 Slides · ~7m 50s · Fast-Start Neural Voiceover · WhatsApp Edition: 8.63 MB · 1080p Master: 33.79 MB</div>
+    </div>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+      <a href="presentation.html" class="btn btn-secondary">
+        📊 Slide Deck
+      </a>
+      <a href="CAAM_2030_Presentation_WhatsApp.mp4" download="CAAM_2030_Presentation_WhatsApp.mp4" class="btn btn-whatsapp">
+        💬 Download WhatsApp MP4 (8.6 MB)
+      </a>
+      <a href="CAAM_2030_Presentation.mp4" download="CAAM_2030_Presentation.mp4" class="btn btn-primary">
+        ⬇️ Download 1080p Master MP4 (33 MB)
+      </a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

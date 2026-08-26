@@ -1,0 +1,2662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAAM 2030: Unified Aviation Portal — Suria Ramadhan for En. Zarwavai Suratman (C Edge Sdn Bhd)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ============================================================
+   GLOBAL RESETS & DESIGN TOKENS
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #030712;
+  color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Canvas background for cybernetic particle mesh */
+#bgCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.65;
+}
+
+/* Ambient glow blobs */
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  pointer-events: none;
+  z-index: 0;
+  animation: orbFloat 18s ease-in-out infinite alternate;
+}
+.glow-orb-1 { width: 500px; height: 500px; background: rgba(59,130,246,0.15); top: -100px; left: -100px; }
+.glow-orb-2 { width: 600px; height: 600px; background: rgba(99,102,241,0.12); bottom: -150px; right: -150px; animation-delay: -6s; }
+.glow-orb-3 { width: 400px; height: 400px; background: rgba(16,185,129,0.1); top: 40%; left: 40%; animation-delay: -12s; }
+
+@keyframes orbFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(60px, -40px) scale(1.1); }
+  100% { transform: translate(-40px, 50px) scale(0.95); }
+}
+
+/* ============================================================
+   SLIDE CONTAINER & RESPONSIVE WIDESCREEN LAYOUT
+   ============================================================ */
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem 2.5rem 4.5rem;
+  z-index: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  align-items: center;
+  justify-content: center;
+}
+.slide.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Widescreen master container */
+.slide-box {
+  width: 100%;
+  max-width: 1760px;
+  height: calc(100vh - 5.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+/* Header bar inside slides */
+.slide-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 0.85rem;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 0.55rem;
+}
+.slide-tag {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+.slide-title {
+  font-size: 2.05rem;
+  font-weight: 900;
+  line-height: 1.15;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+.slide-subtitle {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  max-width: 52rem;
+  line-height: 1.4;
+}
+.author-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.22rem 0.75rem;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 999px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+}
+.author-pill strong { color: #ffffff; }
+.author-pill .target-name { color: #34d399; font-weight: 800; }
+
+/* Content grid that fills available height */
+.slide-body {
+  flex: 1;
+  display: flex;
+  gap: 1.2rem;
+  min-height: 0;
+  align-items: stretch;
+}
+
+/* ============================================================
+   GLASSMORPHISM CARDS & CONTAINERS
+   ============================================================ */
+.g-card {
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1.25rem 1.4rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s, box-shadow 0.3s;
+}
+.g-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 20px rgba(99,102,241,0.15);
+}
+.g-card-glow-blue { border-color: rgba(56, 189, 248, 0.25); background: rgba(15, 23, 42, 0.75); }
+.g-card-glow-green { border-color: rgba(52, 211, 153, 0.25); background: rgba(6, 78, 59, 0.15); }
+.g-card-glow-amber { border-color: rgba(251, 191, 36, 0.25); background: rgba(120, 53, 15, 0.15); }
+.g-card-glow-red { border-color: rgba(248, 113, 113, 0.25); background: rgba(127, 29, 29, 0.15); }
+.g-card-glow-purple { border-color: rgba(167, 139, 250, 0.25); background: rgba(88, 28, 135, 0.15); }
+
+/* ============================================================
+   IMAGE CARDS WITH LIVE SCANNER & PULSE
+   ============================================================ */
+.img-wrap {
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  position: relative;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #020617;
+}
+.img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.img-wrap:hover img {
+  transform: scale(1.04);
+}
+/* Cyber laser scanner animation */
+.img-wrap::after {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: 0;
+  right: 0;
+  height: 35%;
+  background: linear-gradient(to bottom, transparent, rgba(56,189,248,0.25), rgba(56,189,248,0.8), transparent);
+  opacity: 0.65;
+  pointer-events: none;
+  animation: laserScan 5s ease-in-out infinite;
+}
+@keyframes laserScan {
+  0% { top: -35%; }
+  50% { top: 100%; }
+  100% { top: -35%; }
+}
+.img-tag-top {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  z-index: 3;
+}
+.img-caption-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(3,7,18,0.95) 0%, rgba(3,7,18,0.6) 70%, transparent 100%);
+  padding: 1.1rem 1.2rem 0.8rem;
+  z-index: 3;
+}
+.img-caption-bar h5 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+.img-caption-bar p {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+/* ============================================================
+   TYPOGRAPHY & GRADIENTS
+   ============================================================ */
+.grad {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.grad-green {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.grad-gold {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.grad-red {
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* High contrast badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.28rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.b-blue { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #7dd3fc; }
+.b-green { background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.4); color: #6ee7b7; }
+.b-red { background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.4); color: #fca5a5; }
+.b-amber { background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); color: #fde68a; }
+.b-purple { background: rgba(167, 139, 250, 0.15); border: 1px solid rgba(167, 139, 250, 0.4); color: #c4b5fd; }
+
+/* Live pulsating indicator dots */
+.pulse-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #10b981;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: greenPulse 1.8s infinite;
+}
+.pulse-dot-red {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ef4444;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  animation: redPulse 1.8s infinite;
+}
+@keyframes greenPulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.8); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+@keyframes redPulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+/* ============================================================
+   TABLES (HIGH CONTRAST & EXPANSIVE)
+   ============================================================ */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(15, 23, 42, 0.5);
+}
+.c-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  text-align: left;
+}
+.c-table th {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.c-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: #e2e8f0;
+  vertical-align: middle;
+}
+.c-table tr:hover td {
+  background: rgba(99, 102, 241, 0.06);
+}
+.c-table .mono-col { font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+
+/* ============================================================
+   ANIMATION KEYFRAMES & STAGGER ENGINE
+   ============================================================ */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes zoomPop {
+  0% { opacity: 0; transform: scale(0.85); }
+  70% { transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.slide.active .a-up { animation: slideInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.slide.active .a-left { animation: slideInLeft 0.65s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.slide.active .a-right { animation: slideInRight 0.65s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.slide.active .a-pop { animation: zoomPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+.d-1 { animation-delay: 0.05s !important; }
+.d-2 { animation-delay: 0.15s !important; }
+.d-3 { animation-delay: 0.25s !important; }
+.d-4 { animation-delay: 0.35s !important; }
+.d-5 { animation-delay: 0.45s !important; }
+.d-6 { animation-delay: 0.55s !important; }
+.d-7 { animation-delay: 0.65s !important; }
+.d-8 { animation-delay: 0.75s !important; }
+
+/* ============================================================
+   NAVIGATION CONTROLS BAR (BOTTOM)
+   ============================================================ */
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to top, rgba(3, 7, 18, 0.98) 0%, rgba(3, 7, 18, 0.85) 70%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  z-index: 1000;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.nav-logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  border-radius: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+.nav-logo-text {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+}
+.nav-dots {
+  display: flex;
+  gap: 0.45rem;
+  align-items: center;
+}
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-dot:hover { background: rgba(255,255,255,0.5); transform: scale(1.2); }
+.nav-dot.active {
+  width: 28px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  box-shadow: 0 0 12px rgba(56,189,248,0.5);
+}
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.btn-nav {
+  padding: 0.45rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #cbd5e1;
+}
+.btn-nav:hover {
+  background: #334155;
+  color: #ffffff;
+}
+.btn-nav-primary {
+  background: linear-gradient(135deg, #2563eb, #6366f1);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(37,99,235,0.4);
+}
+.btn-nav-primary:hover {
+  box-shadow: 0 0 28px rgba(37,99,235,0.7);
+  transform: translateY(-1px);
+}
+.slide-counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: #64748b;
+  min-width: 65px;
+  text-align: center;
+}
+
+/* ============================================================
+   RESPONSIVE COMPACT TABLE & VIEWPORT FIT ENHANCEMENTS
+   ============================================================ */
+@media (max-height: 750px) {
+  #s0 h1 {
+    font-size: 3.2rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+  #s0 p {
+    font-size: 1.1rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  #s0 .g-card {
+    padding: 0.8rem !important;
+  }
+  #s0 .g-card div:first-child {
+    font-size: 1.8rem !important;
+  }
+  #s0 .a-up.d-4 {
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+#s4obj .c-table th {
+  padding: 0.35rem 0.6rem !important;
+  font-size: 0.72rem !important;
+}
+#s4obj .c-table td {
+  padding: 0.35rem 0.6rem !important;
+  font-size: 0.78rem !important;
+}
+
+#s7 .c-table th {
+  padding: 0.35rem 0.6rem !important;
+  font-size: 0.72rem !important;
+}
+#s7 .c-table td {
+  padding: 0.35rem 0.6rem !important;
+  font-size: 0.78rem !important;
+}
+
+#s8 .c-table th {
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.72rem !important;
+}
+#s8 .c-table td {
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.76rem !important;
+}
+
+#s10 .c-table th {
+  padding: 0.35rem 0.6rem !important;
+  font-size: 0.72rem !important;
+}
+#s10 .c-table td {
+  padding: 0.35rem 0.6rem !important;
+  font-size: 0.78rem !important;
+}
+#s10 .c-table .mono-col {
+  font-size: 0.74rem !important;
+}
+
+#s11 .c-table th {
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.72rem !important;
+}
+#s11 .c-table td {
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.76rem !important;
+}
+</style>
+</head>
+<body>
+
+<!-- Interactive Particle Mesh Canvas -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- Ambient Glow Blobs -->
+<div class="glow-orb glow-orb-1"></div>
+<div class="glow-orb glow-orb-2"></div>
+<div class="glow-orb glow-orb-3"></div>
+
+<!-- ============================================================
+     SLIDE 0: HERO / TITLE
+     ============================================================ -->
+<div class="slide active" id="s0">
+  <div class="slide-box" style="justify-content:center;align-items:center;text-align:center">
+    <div class="a-pop d-1" style="margin-bottom:1.2rem">
+      <span class="badge b-blue" style="font-size:0.88rem;padding:0.4rem 1.2rem">
+        <span class="pulse-dot"></span> CAAM STRATEGIC TRANSFORMATION 2026–2030
+      </span>
+    </div>
+    
+    <h1 class="a-up d-2" style="font-size:4.2rem;font-weight:900;line-height:1.08;letter-spacing:-0.03em;max-width:72rem;margin-bottom:1.2rem">
+      UNIFIED AVIATION <span class="grad">PORTAL ECOSYSTEM</span>
+    </h1>
+    
+    <p class="a-up d-3" style="font-size:1.25rem;color:#cbd5e1;max-width:54rem;line-height:1.6;margin-bottom:2.2rem">
+      A Sovereign, Microservices-Driven Digital Regulatory Authority for Technical Safety, Airspace Management &amp; Post-Merger Economic Oversight under Act 771.
+    </p>
+
+    <!-- 4 High Impact Value Highlights -->
+    <div class="a-up d-4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;width:100%;max-width:1100px;margin-bottom:1.4rem">
+      <div class="g-card g-card-glow-blue" style="text-align:center;padding:1rem">
+        <div style="font-size:2.1rem;font-weight:900" class="grad">RM 41.17M</div>
+        <div style="font-size:0.82rem;color:#94a3b8;margin-top:0.2rem">3-Year Net Benefit (PPP)</div>
+      </div>
+      <div class="g-card g-card-glow-green" style="text-align:center;padding:1rem">
+        <div style="font-size:2.1rem;font-weight:900" class="grad-green">&lt; 3 Seconds</div>
+        <div style="font-size:0.82rem;color:#94a3b8;margin-top:0.2rem">QR Blockchain Licence Check</div>
+      </div>
+      <div class="g-card g-card-glow-amber" style="text-align:center;padding:1rem">
+        <div style="font-size:2.1rem;font-weight:900" class="grad-gold">3D OLS &amp; UTM</div>
+        <div style="font-size:0.82rem;color:#94a3b8;margin-top:0.2rem">Automated Airspace Clearance</div>
+      </div>
+      <div class="g-card g-card-glow-purple" style="text-align:center;padding:1rem">
+        <div style="font-size:2.1rem;font-weight:900" class="grad">Tier 1 Sovereign</div>
+        <div style="font-size:0.82rem;color:#94a3b8;margin-top:0.2rem">MyGovCloud PDSA Cyberjaya</div>
+      </div>
+    </div>
+
+        <!-- Executive Attribution Card: Suria Ramadhan for En. Zarwavai Suratman (C Edge Sdn Bhd) -->
+    <div class="a-up d-5" style="display:flex;align-items:center;justify-content:center;gap:1.5rem;width:100%;max-width:1100px;margin-bottom:1.6rem;padding:0.75rem 1.4rem;background:rgba(15,23,42,0.65);border:1px solid rgba(56,189,248,0.25);border-radius:0.75rem;backdrop-filter:blur(12px)">
+      <div style="display:flex;align-items:center;gap:0.65rem;text-align:left">
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#38bdf8,#6366f1);display:flex;align-items:center;justify-content:center;font-size:0.95rem;font-weight:900;color:#ffffff">SR</div>
+        <div>
+          <div style="font-size:0.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em">Prepared By</div>
+          <div style="font-size:0.92rem;font-weight:800;color:#ffffff">Suria Ramadhan</div>
+        </div>
+      </div>
+      <div style="height:28px;width:1px;background:rgba(255,255,255,0.12)"></div>
+      <div style="display:flex;align-items:center;gap:0.65rem;text-align:left">
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#34d399,#059669);display:flex;align-items:center;justify-content:center;font-size:0.95rem;font-weight:900;color:#ffffff">ZS</div>
+        <div>
+          <div style="font-size:0.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em">Prepared For</div>
+          <div style="font-size:0.92rem;font-weight:800;color:#34d399">En. Zarwavai Suratman <span style="font-weight:600;color:#cbd5e1">(C Edge Sdn Bhd)</span></div>
+        </div>
+      </div>
+      <div style="height:28px;width:1px;background:rgba(255,255,255,0.12)"></div>
+      <div style="display:flex;align-items:center;gap:0.65rem;text-align:left">
+        <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:0.95rem;font-weight:900;color:#ffffff">🇲🇾</div>
+        <div>
+          <div style="font-size:0.68rem;color:#94a3b8;text-transform:uppercase;letter-spacing:0.08em">Target Authority</div>
+          <div style="font-size:0.92rem;font-weight:800;color:#fde68a">Civil Aviation Authority of Malaysia (CAAM)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="a-up d-6">
+      <button class="btn-nav btn-nav-primary" style="font-size:1.05rem;padding:0.8rem 2.5rem" onclick="goToSlide(1)">
+        Explore Strategic Proposal →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 1: EXPANDED MANDATE (ACT 771 + MAVCOM MERGER)
+     ============================================================ -->
+<div class="slide" id="s1">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Strategic Regulatory Context</div>
+        <h2 class="slide-title">Expanded Mandate — <span class="grad">Single Regulatory Authority</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Following the 1 August 2025 merger with MAVCOM under Act 771, CAAM commands sole technical and economic jurisdiction.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: 3D Mandate Evolution Render -->
+      <div style="flex:1.1;min-width:0" class="a-left d-2">
+        <div class="img-wrap" style="height:100%;min-height:460px">
+          <img src="assets/mandate_evolution.jpg" alt="Malaysian Civil Aviation Regulatory Evolution">
+          <div class="img-tag-top"><span class="pulse-dot"></span> DUAL REGULATORY MANDATE · ACT 771</div>
+          <div class="img-caption-bar">
+            <h5>Unified Aviation Regulator Framework (Post-MAVCOM 2025)</h5>
+            <p>Unifying technical flight safety standards, ICAO compliance, commercial air service licensing, and consumer passenger SLAs in a sovereign Cyberjaya cloud.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Timeline & Dual Mandate Grid -->
+      <div style="flex:1.2;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:0.75rem" class="a-right d-3">
+        <!-- 3-Stage Timeline -->
+        <div class="g-card" style="padding:0.85rem 1rem">
+          <div style="font-size:0.92rem;font-weight:800;color:#38bdf8;margin-bottom:0.6rem">🇲🇾 Malaysian Aviation Evolution Timeline</div>
+          <div style="display:flex;flex-direction:column;gap:0.5rem">
+            <div style="display:flex;gap:0.75rem;align-items:center;padding:0.45rem 0.75rem;border-radius:0.5rem;background:rgba(255,255,255,0.03);border-left:3px solid #3b82f6">
+              <span class="mono" style="font-size:0.85rem;font-weight:900;color:#60a5fa;min-width:85px">1969–2018</span>
+              <div style="font-size:0.82rem;color:#cbd5e1"><strong>DCA Department:</strong> Civil service MOT framework, manual paper workflows.</div>
+            </div>
+            <div style="display:flex;gap:0.75rem;align-items:center;padding:0.45rem 0.75rem;border-radius:0.5rem;background:rgba(255,255,255,0.03);border-left:3px solid #8b5cf6">
+              <span class="mono" style="font-size:0.85rem;font-weight:900;color:#c084fc;min-width:85px">2018–2025</span>
+              <div style="font-size:0.82rem;color:#cbd5e1"><strong>Statutory Authority (Act 771):</strong> Autonomous technical flight safety &amp; airworthiness.</div>
+            </div>
+            <div style="display:flex;gap:0.75rem;align-items:center;padding:0.45rem 0.75rem;border-radius:0.5rem;background:rgba(16,185,129,0.1);border-left:3px solid #10b981">
+              <span class="mono" style="font-size:0.85rem;font-weight:900;color:#34d399;min-width:85px">1 AUG 2025</span>
+              <div style="font-size:0.82rem;color:#6ee7b7"><strong>Unified Regulator:</strong> Absorption of MAVCOM economic licences &amp; passenger protection.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-Column Dual Mandate Cards -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+          <div class="g-card g-card-glow-blue" style="padding:0.85rem">
+            <span class="badge b-blue" style="margin-bottom:0.4rem;font-size:0.72rem">Technical &amp; Safety</span>
+            <ul style="list-style:none;font-size:0.8rem;color:#cbd5e1;line-height:1.45;display:flex;flex-direction:column;gap:0.25rem">
+              <li>✓ Flight Crew &amp; AME Licensing</li>
+              <li>✓ Aircraft Airworthiness &amp; AOC</li>
+              <li>✓ 3D Airport Obstacle Surfaces (CAD 14)</li>
+              <li>✓ Nationwide Drone UTM Airspace</li>
+              <li>✓ ICAO USOAP Compliance Reporting</li>
+            </ul>
+          </div>
+
+          <div class="g-card g-card-glow-green" style="padding:0.85rem">
+            <span class="badge b-green" style="margin-bottom:0.4rem;font-size:0.72rem">Economic &amp; Consumer</span>
+            <ul style="list-style:none;font-size:0.8rem;color:#cbd5e1;line-height:1.45;display:flex;flex-direction:column;gap:0.25rem">
+              <li>✓ Commercial Air Service Licences (ASL)</li>
+              <li>✓ Ground Handling Licences (GHL)</li>
+              <li>✓ Flight Delay &amp; Refund SLA Tracking</li>
+              <li>✓ Rural Air Services (RAS) Subsidies</li>
+              <li>✓ Public Dispute &amp; AI Consumer Hub</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="padding:0.65rem 0.95rem;background:rgba(255,255,255,0.04);border-radius:0.5rem;font-size:0.8rem;color:#94a3b8;border:1px solid rgba(255,255,255,0.06)">
+          <strong style="color:#f8fafc">Strategic Imperative:</strong> A fragmented IT stack cannot support this dual mandate without a unified, sovereign cloud-native architecture.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 2: MARKET CONTEXT & OPERATIONAL GROWTH
+     ============================================================ -->
+<div class="slide" id="s2">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Market Dynamics &amp; Workload</div>
+        <h2 class="slide-title">Malaysian Aviation — <span class="grad">Growth vs Operational Strain</span></h2>
+      </div>
+      <div class="slide-subtitle">
+        Surging post-pandemic travel and exponential drone adoption create acute bottlenecks in manual regulatory workflows.
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: 4 Metric Cards -->
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:1rem" class="a-left d-2">
+        <div class="g-card g-card-glow-blue" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1.4rem">
+          <div style="font-size:2.8rem;font-weight:900;color:#38bdf8" class="mono">138.4M</div>
+          <div style="font-size:0.95rem;font-weight:700;color:#f8fafc;margin-top:0.3rem">Annual Passengers</div>
+          <div style="font-size:0.8rem;color:#94a3b8">+14.2% YoY Surge (2025/2026)</div>
+        </div>
+
+        <div class="g-card g-card-glow-purple" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1.4rem">
+          <div style="font-size:2.8rem;font-weight:900;color:#c084fc" class="mono">940,000</div>
+          <div style="font-size:0.95rem;font-weight:700;color:#f8fafc;margin-top:0.3rem">Aircraft Movements</div>
+          <div style="font-size:0.8rem;color:#94a3b8">Across 22 Commercial Aerodromes</div>
+        </div>
+
+        <div class="g-card g-card-glow-amber" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1.4rem">
+          <div style="font-size:2.8rem;font-weight:900;color:#fbbf24" class="mono">15,000+</div>
+          <div style="font-size:0.95rem;font-weight:700;color:#f8fafc;margin-top:0.3rem">Active Commercial UAS</div>
+          <div style="font-size:0.8rem;color:#94a3b8">Unregulated Drone Operations</div>
+        </div>
+
+        <div class="g-card g-card-glow-red" style="display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:1.4rem">
+          <div style="font-size:2.8rem;font-weight:900;color:#f87171" class="mono">30 Days</div>
+          <div style="font-size:0.95rem;font-weight:700;color:#f8fafc;margin-top:0.3rem">Manual Licence Turnaround</div>
+          <div style="font-size:0.8rem;color:#94a3b8">Paper &amp; In-Person Processing</div>
+        </div>
+      </div>
+
+      <!-- Right: Interactive Chart -->
+      <div class="g-card a-right d-3" style="flex:1.2;display:flex;flex-direction:column;justify-content:space-between">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+          <h4 style="font-size:1.05rem;font-weight:800;color:#ffffff">Passenger &amp; Movement Trajectory (2022–2030)</h4>
+          <span class="badge b-blue">Forecast Model</span>
+        </div>
+        <div style="flex:1;min-height:220px;position:relative">
+          <canvas id="marketChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 3: 6 REGULATORY GAPS
+     ============================================================ -->
+<div class="slide" id="s3">
+  <div class="slide-box">
+        <div class="slide-hdr">
+      <div>
+<div class="slide-tag">Problem Statement</div>
+        <h2 class="slide-title">Six Critical <span class="grad-red">Regulatory Vulnerabilities</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Operational fragmentation across CAAM divisions leads to severe compliance risks, revenue leakage, and public safety exposure.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+      <div class="g-card g-card-glow-red a-up d-1" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+            <span style="font-size:1.6rem">🏗️</span>
+            <span class="badge b-red">Act 771 S.24O Violation</span>
+          </div>
+          <h4 style="font-size:1.05rem;font-weight:800;color:#fca5a5;margin-bottom:0.4rem">1. Unmonitored Obstacle Lights</h4>
+          <p style="font-size:0.84rem;color:#cbd5e1;line-height:1.55">
+            Over 14,200 telecommunication and transmission structures nationwide lack live telemetry. Following the July 2022 OLC revocation, CAAM officers have zero real-time visibility over unlit hazard towers in active flight approach funnels.
+          </p>
+        </div>
+        <div style="margin-top:0.75rem;padding:0.5rem 0.75rem;background:rgba(239,68,68,0.1);border-radius:0.4rem;border:1px solid rgba(239,68,68,0.25);font-size:0.78rem;color:#fca5a5;font-weight:700">
+          ⚠️ Risk: Aircraft collision hazard · RM 100k fine uncollected
+        </div>
+      </div>
+
+      <div class="g-card g-card-glow-amber a-up d-2" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+            <span style="font-size:1.6rem">🪪</span>
+            <span class="badge b-amber">ICAO Annex 1 Audit Lag</span>
+          </div>
+          <h4 style="font-size:1.05rem;font-weight:800;color:#fde68a;margin-bottom:0.4rem">2. Paper Crew Verification</h4>
+          <p style="font-size:0.84rem;color:#cbd5e1;line-height:1.55">
+            Manual 30-day licensing cycle requiring physical counter visits in Putrajaya. Foreign civil aviation authorities must wait 5–10 business days for email confirmations to verify Malaysian pilot credentials due to the lack of an immutable public verification ledger.
+          </p>
+        </div>
+        <div style="margin-top:0.75rem;padding:0.5rem 0.75rem;background:rgba(245,158,11,0.1);border-radius:0.4rem;border:1px solid rgba(245,158,11,0.25);font-size:0.78rem;color:#fde68a;font-weight:700">
+          ⚠️ Risk: Licensing backlog · Foreign credential delays
+        </div>
+      </div>
+
+      <div class="g-card g-card-glow-purple a-up d-3" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+            <span style="font-size:1.6rem">🛸</span>
+            <span class="badge b-purple">MCAR 2016 Reg 140</span>
+          </div>
+          <h4 style="font-size:1.05rem;font-weight:800;color:#c4b5fd;margin-bottom:0.4rem">3. Unregulated UTM Airspace</h4>
+          <p style="font-size:0.84rem;color:#cbd5e1;line-height:1.55">
+            Commercial drone operators endure 14-day manual email processing for Authorization to Fly (ATF) permits. Air traffic controllers have zero real-time radar or Remote ID tracking for unauthorized drone intrusions within 5km airport Control Zones (CTR).
+          </p>
+        </div>
+        <div style="margin-top:0.75rem;padding:0.5rem 0.75rem;background:rgba(168,85,247,0.1);border-radius:0.4rem;border:1px solid rgba(168,85,247,0.25);font-size:0.78rem;color:#c4b5fd;font-weight:700">
+          ⚠️ Risk: Near-miss collisions · 14-day commercial bottleneck
+        </div>
+      </div>
+
+      <div class="g-card g-card-glow-red a-up d-4" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+            <span style="font-size:1.6rem">🔧</span>
+            <span class="badge b-red">ICAO Annex 6 &amp; 8</span>
+          </div>
+          <h4 style="font-size:1.05rem;font-weight:800;color:#fca5a5;margin-bottom:0.4rem">4. Disconnected Airworthiness</h4>
+          <p style="font-size:0.84rem;color:#cbd5e1;line-height:1.55">
+            AOC operator maintenance logs and MOR mandatory incident reports are siloed across disparate spreadsheets. Safety inspections occur reactively on fixed calendars rather than predictively driven by machine learning anomaly detection.
+          </p>
+        </div>
+        <div style="margin-top:0.75rem;padding:0.5rem 0.75rem;background:rgba(239,68,68,0.1);border-radius:0.4rem;border:1px solid rgba(239,68,68,0.25);font-size:0.78rem;color:#fca5a5;font-weight:700">
+          ⚠️ Risk: Undetected mechanical faults · Reactive safety posture
+        </div>
+      </div>
+
+      <div class="g-card g-card-glow-blue a-up d-5" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+            <span style="font-size:1.6rem">👥</span>
+            <span class="badge b-blue">MACPC 2016 Mandate</span>
+          </div>
+          <h4 style="font-size:1.05rem;font-weight:800;color:#93c5fd;margin-bottom:0.4rem">5. Post-MAVCOM Portal Gap</h4>
+          <p style="font-size:0.84rem;color:#cbd5e1;line-height:1.55">
+            Following the 1 August 2025 merger, CAAM lacks a unified digital consumer portal for passenger flight rights, luggage compensation tracking, airline on-time SLA ranking, and commercial Air Service Licence (ASL) economic oversight.
+          </p>
+        </div>
+        <div style="margin-top:0.75rem;padding:0.5rem 0.75rem;background:rgba(59,130,246,0.1);border-radius:0.4rem;border:1px solid rgba(59,130,246,0.25);font-size:0.78rem;color:#93c5fd;font-weight:700">
+          ⚠️ Risk: Passenger complaint backlogs · Regulatory blindspot
+        </div>
+      </div>
+
+      <div class="g-card g-card-glow-green a-up d-6" style="display:flex;flex-direction:column;justify-content:space-between;padding:1.1rem">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+            <span style="font-size:1.6rem">💰</span>
+            <span class="badge b-green">Revenue Leakage</span>
+          </div>
+          <h4 style="font-size:1.05rem;font-weight:800;color:#6ee7b7;margin-bottom:0.4rem">6. RM 28M Uncollected Fees</h4>
+          <p style="font-size:0.84rem;color:#cbd5e1;line-height:1.55">
+            Unregistered obstacle towers, unmonitored commercial drone operations, delayed AOC renewal fees, and unautomated statutory fine collection cause over RM 28 Million in lost annual regulatory revenues that should fund national aviation infrastructure.
+          </p>
+        </div>
+        <div style="margin-top:0.75rem;padding:0.5rem 0.75rem;background:rgba(16,185,129,0.1);border-radius:0.4rem;border:1px solid rgba(16,185,129,0.25);font-size:0.78rem;color:#6ee7b7;font-weight:700">
+          ⚠️ Risk: Fiscal burden on Treasury · Zero self-funding model
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     SLIDE 4: THE OPERATIONAL BRIDGE — MIGRATING 150+ MANUAL FORMS
+     ============================================================ -->
+<div class="slide" id="s3forms">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Operational Foundation &amp; Ground Reality</div>
+        <h2 class="slide-title">The Operational Bridge — <span class="grad">Migrating 150+ Manual Forms</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Eliminating physical queues in Putrajaya and digitising paper dossiers into an intelligent self-service e-Forms engine.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: Visual Comparison (Paper Dossiers to Glowing Digital Tablet) -->
+      <div style="flex:1.1;min-width:0" class="a-left d-2">
+        <div class="img-wrap" style="height:100%;min-height:460px">
+          <img src="assets/eforms_digitisation.jpg" alt="CAAM Manual Forms to e-Forms Modernisation">
+          <div class="img-tag-top"><span class="pulse-dot"></span> NATIONAL AVIATION E-FORM ENGINE · FORMFLOW 360</div>
+          <div class="img-caption-bar">
+            <h5>From Physical Dossiers &amp; Rubber Stamps to Automated Digital e-Forms</h5>
+            <p>Digitising 150+ static PDF/paper applications into multi-step responsive web forms with MyKad auto-fill, Act 560 digital PKI signatures, and instant FPX e-payments.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Real CAAM Forms Breakdown & 6-Step Digital Pipeline -->
+      <div style="flex:1.2;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:0.7rem" class="a-right d-3">
+        <!-- Card 1: 6 Real-World CAAM Paper Form Categories -->
+        <div class="g-card" style="padding:0.85rem 1.05rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.45rem">
+            <h4 style="font-size:0.92rem;font-weight:800;color:#38bdf8">📋 Real CAAM Paper Forms Being Digitised (Day 1)</h4>
+            <span class="badge b-amber" style="font-size:0.68rem">150+ Forms Catalog</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.45rem;font-size:0.76rem;color:#cbd5e1">
+            <div style="background:rgba(255,255,255,0.03);padding:0.4rem 0.55rem;border-radius:0.4rem;border-left:2px solid #38bdf8">
+              <strong style="color:#ffffff">Personnel Licensing:</strong><br>
+              <code>CAAM/PEL/01–12</code> (Pilot, AME, Medicals)
+            </div>
+            <div style="background:rgba(255,255,255,0.03);padding:0.4rem 0.55rem;border-radius:0.4rem;border-left:2px solid #c084fc">
+              <strong style="color:#ffffff">Airworthiness (AW):</strong><br>
+              <code>CAAM/AW/81–95</code> (C of A, Part 145/CAMO)
+            </div>
+            <div style="background:rgba(255,255,255,0.03);padding:0.4rem 0.55rem;border-radius:0.4rem;border-left:2px solid #34d399">
+              <strong style="color:#ffffff">Flight Operations:</strong><br>
+              <code>CAAM/BOP/01–08</code> (AOC &amp; Dangerous Goods)
+            </div>
+            <div style="background:rgba(255,255,255,0.03);padding:0.4rem 0.55rem;border-radius:0.4rem;border-left:2px solid #fbbf24">
+              <strong style="color:#ffffff">Aerodrome &amp; Airspace:</strong><br>
+              <code>CAAM/AGA/01–06</code> (AOL &amp; Obstacle Clearance)
+            </div>
+            <div style="background:rgba(255,255,255,0.03);padding:0.4rem 0.55rem;border-radius:0.4rem;border-left:2px solid #f472b6">
+              <strong style="color:#ffffff">Drone / UAS Permits:</strong><br>
+              <code>CAAM/UAS/01–03</code> (ATF &amp; Special Operators)
+            </div>
+            <div style="background:rgba(255,255,255,0.03);padding:0.4rem 0.55rem;border-radius:0.4rem;border-left:2px solid #60a5fa">
+              <strong style="color:#ffffff">Post-MAVCOM Economic:</strong><br>
+              <code>MAVCOM/ASL–GHL</code> (Air Service &amp; Ground Handling)
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: The 6-Step Digital e-Form Pipeline -->
+        <div class="g-card g-card-glow-blue" style="padding:0.85rem 1.05rem">
+          <div style="font-size:0.88rem;font-weight:800;color:#93c5fd;margin-bottom:0.4rem">⚡ The 6-Step Intelligent e-Form Pipeline</div>
+          <div style="display:flex;flex-direction:column;gap:0.35rem">
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:#cbd5e1">
+              <span class="badge b-blue" style="font-size:0.7rem;padding:0.1rem 0.4rem">1</span>
+              <span><strong>Dynamic Self-Service Web Form:</strong> Multi-step validation, file upload &amp; draft auto-save.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:#cbd5e1">
+              <span class="badge b-purple" style="font-size:0.7rem;padding:0.1rem 0.4rem">2</span>
+              <span><strong>OCR Document Extractor:</strong> Converts legacy paper archives into structured SQL tables.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:#cbd5e1">
+              <span class="badge b-green" style="font-size:0.7rem;padding:0.1rem 0.4rem">3</span>
+              <span><strong>Identity Pre-Population:</strong> Auto-fills bio-data via MyKad (JPN) &amp; ICAO registries.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:#cbd5e1">
+              <span class="badge b-amber" style="font-size:0.7rem;padding:0.1rem 0.4rem">4</span>
+              <span><strong>Act 560 Digital Signature:</strong> Cryptographic PKI signer replacing physical rubber stamps.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:#cbd5e1">
+              <span class="badge b-red" style="font-size:0.7rem;padding:0.1rem 0.4rem">5</span>
+              <span><strong>Automated Case Routing:</strong> Direct assignment to safety inspectors with 48h SLA timers.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;color:#cbd5e1">
+              <span class="badge b-green" style="font-size:0.7rem;padding:0.1rem 0.4rem">6</span>
+              <span><strong>Integrated Government e-Payment:</strong> FPX, DuitNow &amp; Card checkout with instant e-Receipt.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Strategic Note -->
+        <div style="padding:0.55rem 0.9rem;background:rgba(255,255,255,0.03);border:1px solid rgba(56,189,248,0.25);border-radius:0.5rem;font-size:0.78rem;color:#cbd5e1">
+          <strong style="color:#38bdf8">The Evolutionary Bridge:</strong> Digitising all 150+ manual forms in <strong>Horizon 1</strong> provides the structured, clean spatial data required to power 3D OLS, UTM, and AI Safety in <strong>Horizon 2</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 4: SYSTEM OBJECTIVES & OPERATIONAL TRANSFORMATION
+     ============================================================ -->
+<div class="slide" id="s4obj">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Strategic System Objectives</div>
+        <h2 class="slide-title">System Objectives — <span class="grad">Legacy Bottlenecks vs 2030 Transformation</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Eliminating paper friction and empowering CAAM with automated, intelligent regulatory enforcement under Act 771.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: High Impact Transformation Comparison Visual -->
+      <div style="flex:1.1;min-width:0" class="a-left d-2">
+        <div class="img-wrap" style="height:100%;min-height:460px">
+          <img src="assets/ops_transformation.jpg" alt="CAAM Operations Transformation">
+          <div class="img-tag-top"><span class="pulse-dot"></span> OPERATIONAL TRANSFORMATION BLUEPRINT · ACT 771</div>
+          <div class="img-caption-bar">
+            <h5>Legacy Chaotic Paper Operations (Left) vs 2030 Unified Command Center (Right)</h5>
+            <p>Transforming manual counter backlogs and paper filing cabinets into real-time holographic airspace tracking, instant QR pilot validation, and automated IoT safety telemetry.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: 4 SMART Objective Pillars -->
+      <div style="flex:1.1;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:0.6rem" class="a-right d-3">
+        <!-- Pillar 1: ICH -->
+        <div class="g-card g-card-glow-green" style="padding:0.75rem 0.95rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
+            <h4 style="font-size:0.92rem;font-weight:800;color:#6ee7b7">1. Structure Safety &amp; 3D OLS (ICH)</h4>
+            <span class="badge b-green" style="font-size:0.7rem;padding:0.15rem 0.5rem">Sub-3s · 24/7 IoT</span>
+          </div>
+          <div style="font-size:0.78rem;color:#cbd5e1;line-height:1.4">
+            <strong>Transformation:</strong> Replace manual paper OLC reviews with automated PostGIS 3D OLS obstacle calculations (&lt;3s) and 24/7 IoT MQTT sensor fault detection across 14,200+ structures.
+          </div>
+        </div>
+
+        <!-- Pillar 2: PLH -->
+        <div class="g-card g-card-glow-purple" style="padding:0.75rem 0.95rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
+            <h4 style="font-size:0.92rem;font-weight:800;color:#c4b5fd">2. Instant Pilot &amp; Crew Licensing (PLH)</h4>
+            <span class="badge b-purple" style="font-size:0.7rem;padding:0.15rem 0.5rem">30d → 5d · Blockchain</span>
+          </div>
+          <div style="font-size:0.78rem;color:#cbd5e1;line-height:1.4">
+            <strong>Transformation:</strong> Replace physical counter queues with MyKad eKYC digital application and Hyperledger Fabric blockchain digital crew cards verified in &lt;3 seconds globally.
+          </div>
+        </div>
+
+        <!-- Pillar 3: FAMH -->
+        <div class="g-card g-card-glow-amber" style="padding:0.75rem 0.95rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
+            <h4 style="font-size:0.92rem;font-weight:800;color:#fde68a">3. Automated 3D UTM Airspace (FAMH)</h4>
+            <span class="badge b-amber" style="font-size:0.7rem;padding:0.15rem 0.5rem">14d → &lt;24h · ASTM F3411</span>
+          </div>
+          <div style="font-size:0.78rem;color:#cbd5e1;line-height:1.4">
+            <strong>Transformation:</strong> Replace 14-day manual email approvals with dynamic 3D geofencing, AI conflict detection, and sub-24h automated digital ATF flight corridor permits.
+          </div>
+        </div>
+
+        <!-- Pillar 4: OCSH + PSCPH -->
+        <div class="g-card g-card-glow-blue" style="padding:0.75rem 0.95rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
+            <h4 style="font-size:0.92rem;font-weight:800;color:#93c5fd">4. Predictive Safety &amp; Consumer Rights</h4>
+            <span class="badge b-blue" style="font-size:0.7rem;padding:0.15rem 0.5rem">AI Risk Dial · Live SLA</span>
+          </div>
+          <div style="font-size:0.78rem;color:#cbd5e1;line-height:1.4">
+            <strong>Transformation:</strong> Replace reactive post-incident audits with XGBoost operator risk scoring (`73/100`), inspector tablet digital sign-offs, and live MAVCOM passenger refund tracking.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 5: SMOOTHING CAAM DAILY OPERATIONS (OFFICER WORKBENCH)
+     ============================================================ -->
+<div class="slide" id="s4ops">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Operational Impact in Action</div>
+        <h2 class="slide-title">Smoothing CAAM Daily Operations — <span class="grad">The Officer Console</span></h2>
+      </div>
+      <div class="slide-subtitle">
+        How CAAM officers, safety inspectors, and air traffic controllers resolve regulatory tasks in seconds rather than weeks.
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: Officer Multi-Screen Command Console Visual -->
+      <div style="flex:1.15" class="a-left d-2">
+        <div class="img-wrap" style="height:100%">
+          <img src="assets/caam_daily_workflow.jpg" alt="CAAM Officer Daily Operations Console">
+          <div class="img-tag-top"><span class="pulse-dot"></span> LIVE REGULATORY DESK · MULTI-SCREEN WORKBENCH</div>
+          <div class="img-caption-bar">
+            <h5>CAAM Officer Multi-Screen Operations Console in Daily Action</h5>
+            <p>Screen 1: 3D OLS Surface Clearance · Screen 2: 1-Click Drone ATF Approval Queue · Screen 3: Live Airline SLA Metrics &amp; AI Safety Score · Tablet: Stylus Digital Signatures.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: 4 Real-World Daily Operational Workflows -->
+      <div style="flex:1.15;display:flex;flex-direction:column;gap:0.65rem" class="a-right d-3">
+        <div class="g-card g-card-glow-green" style="padding:0.85rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
+            <span style="font-size:0.92rem;font-weight:800;color:#6ee7b7">🏗️ Daily Use Case 1: Telco Structure Erection</span>
+            <span class="badge b-green">1.8 Seconds · PostGIS</span>
+          </div>
+          <p style="font-size:0.82rem;color:#cbd5e1;line-height:1.45">
+            Telco submits 250m tower coordinates online → System auto-executes PostGIS `ST_3DIntersects` against CAD 14 airport approach funnels → Instant compliant clearance or auto S.24O notice issued without 3-week surveyor delays.
+          </p>
+        </div>
+
+        <div class="g-card g-card-glow-amber" style="padding:0.85rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
+            <span style="font-size:0.92rem;font-weight:800;color:#fde68a">🛸 Daily Use Case 2: Commercial Drone Authorization</span>
+            <span class="badge b-amber">&lt;45 Secs · Dynamic UTM</span>
+          </div>
+          <p style="font-size:0.82rem;color:#cbd5e1;line-height:1.45">
+            Survey operator requests flight near Subang CTR → System cross-references live NOTAMs, weather, and 3D geofence → Officer approves with 1-click in &lt;45 seconds with ASTM F3411 Remote ID beacon broadcast.
+          </p>
+        </div>
+
+        <div class="g-card g-card-glow-red" style="padding:0.85rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
+            <span style="font-size:0.92rem;font-weight:800;color:#fca5a5">🔧 Daily Use Case 3: Targeted Ramp Safety Audit</span>
+            <span class="badge b-red">Predictive AI · Tablet Sign-off</span>
+          </div>
+          <p style="font-size:0.82rem;color:#cbd5e1;line-height:1.45">
+            AI PSMS detects component wear trends across airline Boeing 737 fleet → Generates targeted inspection checklist on safety officer's rugged tablet → Inspector conducts ramp check and signs off digitally in real-time.
+          </p>
+        </div>
+
+        <div class="g-card g-card-glow-purple" style="padding:0.85rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
+            <span style="font-size:0.92rem;font-weight:800;color:#c4b5fd">🪪 Daily Use Case 4: Foreign Crew Airport Gate Check</span>
+            <span class="badge b-purple">2.1 Seconds · Hyperledger QR</span>
+          </div>
+          <p style="font-size:0.82rem;color:#cbd5e1;line-height:1.45">
+            Foreign airline flight crew arrives at KLIA gate → Immigration/CAAM officer scans QR crew card with handheld terminal → Validates cryptographic ATPL licence signature against Hyperledger ledger in 2.1 seconds.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 5: UNIFIED SOLUTION ARCHITECTURE & DASHBOARD
+     ============================================================ -->
+<div class="slide" id="s4">
+  <div class="slide-box">
+        <div class="slide-hdr">
+      <div>
+<div class="slide-tag">Solution Architecture</div>
+        <h2 class="slide-title">Unified Aviation Portal — <span class="grad">Full-Stack Ecosystem</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          A single glass pane uniting all 8 regulatory divisions on sovereign Malaysian infrastructure.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: 3 Stack Layers -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:0.9rem" class="a-left d-2">
+        <div class="g-card g-card-glow-blue" style="padding:1.1rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+            <h4 style="font-size:1.05rem;font-weight:800;color:#38bdf8">1. Experience Layer (Web &amp; Mobile)</h4>
+            <span class="badge b-blue">Next.js 14 + React</span>
+          </div>
+          <p style="font-size:0.85rem;color:#cbd5e1;line-height:1.4">Universal responsive design for CAAM officers, airline AOC operators, pilots, drone pilots, and travelling public. PWA offline inspector mode.</p>
+        </div>
+
+        <div class="g-card g-card-glow-purple" style="padding:1.1rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+            <h4 style="font-size:1.05rem;font-weight:800;color:#c084fc">2. Microservices &amp; Business Logic</h4>
+            <span class="badge b-purple">Spring Boot 3 + gRPC</span>
+          </div>
+          <p style="font-size:0.85rem;color:#cbd5e1;line-height:1.4">8 containerized microservices running on Kubernetes with Istio mTLS zero-trust security mesh and Azure Service Bus asynchronous event queues.</p>
+        </div>
+
+        <div class="g-card g-card-glow-green" style="padding:1.1rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+            <h4 style="font-size:1.05rem;font-weight:800;color:#34d399">3. Sovereign Data &amp; Spatial Engine</h4>
+            <span class="badge b-green">PostgreSQL 16 + PostGIS</span>
+          </div>
+          <p style="font-size:0.85rem;color:#cbd5e1;line-height:1.4">Hosted at MyGovCloud PDSA Cyberjaya (Tier 1 Restricted). Integrated with Hyperledger Fabric blockchain for immutable pilot licensing credentials.</p>
+        </div>
+      </div>
+
+      <!-- Right: Large Dashboard Mockup -->
+      <div style="flex:1.2" class="a-right d-3">
+        <div class="img-wrap" style="height:100%">
+          <img src="assets/dashboard.jpg" alt="CAAM Dashboard Mockup">
+          <div class="img-tag-top"><span class="pulse-dot"></span> LIVE SYSTEM PREVIEW · CAAM UNIFIED PORTAL</div>
+          <div class="img-caption-bar">
+            <h5>Executive Operations Command Center</h5>
+            <p>Single-pane regulatory overview featuring live AOC tracking, pilot licensing queue, real-time AOL fault telemetry, and consumer SLA index.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 6: FIVE INTEGRATED REGULATORY HUBS
+     ============================================================ -->
+<div class="slide" id="s5">
+  <div class="slide-box">
+        <div class="slide-hdr">
+      <div>
+<div class="slide-tag">Platform Modules</div>
+        <h2 class="slide-title">Five Integrated <span class="grad">Regulatory Hubs</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Modular, domain-driven microservices covering all operational responsibilities under Act 771 and ICAO standards.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body" style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem">
+      <!-- MOD 1: ICH -->
+      <div class="g-card g-card-glow-green a-up d-1" style="display:flex;flex-direction:column;justify-content:space-between;padding:1rem">
+        <div>
+          <div style="height:190px;border-radius:0.75rem;overflow:hidden;margin-bottom:0.85rem;position:relative;border:1px solid rgba(255,255,255,0.1)">
+            <img src="assets/ols3d.jpg" style="width:100%;height:100%;object-fit:cover" alt="3D OLS">
+            <span style="position:absolute;bottom:6px;left:8px;font-size:0.72rem;font-weight:800;background:rgba(3,7,18,0.85);color:#6ee7b7;padding:0.2rem 0.55rem;border-radius:0.35rem;border:1px solid rgba(52,211,153,0.3)">3D OLS GIS</span>
+          </div>
+          <span class="badge b-green" style="margin-bottom:0.5rem">Module 1 · ICH</span>
+          <h4 style="font-size:1.1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Infrastructure Hub</h4>
+          <ul style="list-style:none;font-size:0.84rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+            <li>✓ PostGIS National Structure Registry</li>
+            <li>✓ IoT MQTT live fault telemetry</li>
+            <li>✓ 3D OLS penetration check (&lt;3s)</li>
+            <li>✓ CAD 14 obstacle funnel modeling</li>
+            <li>✓ Auto S.24O fine enforcement</li>
+          </ul>
+        </div>
+        <div style="padding:0.6rem 0.8rem;background:rgba(52,211,153,0.1);border-radius:0.5rem;border:1px solid rgba(52,211,153,0.25);font-size:0.78rem;color:#6ee7b7;font-weight:700">
+          Target: 14,200+ Towers Monitored
+        </div>
+      </div>
+
+      <!-- MOD 2: PLH -->
+      <div class="g-card g-card-glow-purple a-up d-2" style="display:flex;flex-direction:column;justify-content:space-between;padding:1rem">
+        <div>
+          <div style="height:190px;border-radius:0.75rem;overflow:hidden;margin-bottom:0.85rem;position:relative;border:1px solid rgba(255,255,255,0.1)">
+            <img src="assets/licence_mobile.jpg" style="width:100%;height:100%;object-fit:cover" alt="Licence Mobile">
+            <span style="position:absolute;bottom:6px;left:8px;font-size:0.72rem;font-weight:800;background:rgba(3,7,18,0.85);color:#c084fc;padding:0.2rem 0.55rem;border-radius:0.35rem;border:1px solid rgba(167,139,250,0.3)">CREW CARD</span>
+          </div>
+          <span class="badge b-purple" style="margin-bottom:0.5rem">Module 2 · PLH</span>
+          <h4 style="font-size:1.1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Licensing Hub</h4>
+          <ul style="list-style:none;font-size:0.84rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+            <li>✓ eCLIPSE database synchronization</li>
+            <li>✓ Hyperledger blockchain ledger</li>
+            <li>✓ 3-second instant QR crew card check</li>
+            <li>✓ Pilot, AME, ATC &amp; Drone RCoC</li>
+            <li>✓ Foreign licence validation API</li>
+          </ul>
+        </div>
+        <div style="padding:0.6rem 0.8rem;background:rgba(167,139,250,0.1);border-radius:0.5rem;border:1px solid rgba(167,139,250,0.25);font-size:0.78rem;color:#c4b5fd;font-weight:700">
+          Target: 30d → 5d Turnaround (-83%)
+        </div>
+      </div>
+
+      <!-- MOD 3: FAMH -->
+      <div class="g-card g-card-glow-amber a-up d-3" style="display:flex;flex-direction:column;justify-content:space-between;padding:1rem">
+        <div>
+          <div style="height:190px;border-radius:0.75rem;overflow:hidden;margin-bottom:0.85rem;position:relative;border:1px solid rgba(255,255,255,0.1)">
+            <img src="assets/utm.jpg" style="width:100%;height:100%;object-fit:cover" alt="UTM Airspace">
+            <span style="position:absolute;bottom:6px;left:8px;font-size:0.72rem;font-weight:800;background:rgba(3,7,18,0.85);color:#fde68a;padding:0.2rem 0.55rem;border-radius:0.35rem;border:1px solid rgba(251,191,36,0.3)">3D UTM</span>
+          </div>
+          <span class="badge b-amber" style="margin-bottom:0.5rem">Module 3 · FAMH</span>
+          <h4 style="font-size:1.1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Airspace Hub</h4>
+          <ul style="list-style:none;font-size:0.84rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+            <li>✓ Digital ATF permits (&lt;24 hours)</li>
+            <li>✓ Dynamic 3D geofencing engine</li>
+            <li>✓ ASTM F3411 Remote ID beacon feed</li>
+            <li>✓ AI collision conflict detection</li>
+            <li>✓ eVTOL AAM-ready architecture</li>
+          </ul>
+        </div>
+        <div style="padding:0.6rem 0.8rem;background:rgba(251,191,36,0.1);border-radius:0.5rem;border:1px solid rgba(251,191,36,0.25);font-size:0.78rem;color:#fde68a;font-weight:700">
+          Target: &lt;24h Automated Authorisation
+        </div>
+      </div>
+
+      <!-- MOD 4: OCSH -->
+      <div class="g-card g-card-glow-red a-up d-4" style="display:flex;flex-direction:column;justify-content:space-between;padding:1rem">
+        <div>
+          <div style="height:190px;border-radius:0.75rem;overflow:hidden;margin-bottom:0.85rem;position:relative;border:1px solid rgba(255,255,255,0.1)">
+            <img src="assets/operator_maintenance.jpg" style="width:100%;height:100%;object-fit:cover" alt="Maintenance">
+            <span style="position:absolute;bottom:6px;left:8px;font-size:0.72rem;font-weight:800;background:rgba(3,7,18,0.85);color:#fca5a5;padding:0.2rem 0.55rem;border-radius:0.35rem;border:1px solid rgba(248,113,113,0.3)">AIRWORTHINESS</span>
+          </div>
+          <span class="badge b-red" style="margin-bottom:0.5rem">Module 4 · OCSH</span>
+          <h4 style="font-size:1.1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Safety &amp; AOC Hub</h4>
+          <ul style="list-style:none;font-size:0.84rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+            <li>✓ Digital AOC lifecycle management</li>
+            <li>✓ Inspector digital signature tablet</li>
+            <li>✓ AI Predictive PSMS (XGBoost)</li>
+            <li>✓ Blockchain maintenance logbook</li>
+            <li>✓ Auto ICAO USOAP compliance export</li>
+          </ul>
+        </div>
+        <div style="padding:0.6rem 0.8rem;background:rgba(248,113,113,0.1);border-radius:0.5rem;border:1px solid rgba(248,113,113,0.25);font-size:0.78rem;color:#fca5a5;font-weight:700">
+          Target: Real-Time Operator Risk Score
+        </div>
+      </div>
+
+      <!-- MOD 5: PSCPH -->
+      <div class="g-card g-card-glow-blue a-up d-5" style="display:flex;flex-direction:column;justify-content:space-between;padding:1rem">
+        <div>
+          <div style="height:190px;border-radius:0.75rem;overflow:hidden;margin-bottom:0.85rem;position:relative;border:1px solid rgba(255,255,255,0.1)">
+            <img src="assets/consumer_mobile.jpg" style="width:100%;height:100%;object-fit:cover" alt="FlyRights">
+            <span style="position:absolute;bottom:6px;left:8px;font-size:0.72rem;font-weight:800;background:rgba(3,7,18,0.85);color:#7dd3fc;padding:0.2rem 0.55rem;border-radius:0.35rem;border:1px solid rgba(56,189,248,0.3)">FLYRIGHTS</span>
+          </div>
+          <span class="badge b-blue" style="margin-bottom:0.5rem">Module 5 · PSCPH</span>
+          <h4 style="font-size:1.1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Consumer Hub</h4>
+          <ul style="list-style:none;font-size:0.84rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+            <li>✓ Passenger dispute &amp; refund portal</li>
+            <li>✓ Real-time airline SLA leaderboard</li>
+            <li>✓ AI bilingual chatbot (BM/EN)</li>
+            <li>✓ Commercial ASL/ASP licence portal</li>
+            <li>✓ Rural Air Services (RAS) subsidies</li>
+          </ul>
+        </div>
+        <div style="padding:0.6rem 0.8rem;background:rgba(56,189,248,0.1);border-radius:0.5rem;border:1px solid rgba(56,189,248,0.25);font-size:0.78rem;color:#7dd3fc;font-weight:700">
+          Target: 100% MAVCOM Mandate Unified
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 7: MICROSERVICES ARCHITECTURE
+     ============================================================ -->
+<div class="slide" id="s6">
+  <div class="slide-box">
+        <div class="slide-hdr">
+      <div>
+<div class="slide-tag">Technical Architecture</div>
+        <h2 class="slide-title">Cloud-Native Microservices — <span class="grad">Event-Driven Grid</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Independently deployable Spring Boot 3 services communicating synchronously via gRPC and asynchronously via Azure Service Bus.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: 3D Microservices Render -->
+      <div style="flex:1" class="a-left d-2">
+        <div class="img-wrap" style="height:100%">
+          <img src="assets/k8s_microservices.jpg" alt="3D Microservices Topology">
+          <div class="img-tag-top"><span class="pulse-dot"></span> KUBERNETES 1.30 · MYGOVCLOUD TOPOLOGY</div>
+          <div class="img-caption-bar">
+            <h5>Zero-Trust Pod Architecture</h5>
+            <p>Istio Service Mesh enforces mutual TLS (mTLS) pod-to-pod identity. Automatic Horizontal Pod Autoscaling (HPA) ensures 99.9% uptime.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Service Grid & Code -->
+      <div style="flex:1.2;display:flex;flex-direction:column;gap:0.85rem" class="a-right d-3">
+        <!-- 8 Microservices Grid -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem">
+          <div class="g-card" style="padding:0.75rem;text-align:center">
+            <div style="font-size:1.3rem">🌐</div>
+            <div style="font-weight:800;font-size:0.8rem;color:#f8fafc">Apigee API Gateway</div>
+            <div class="mono" style="font-size:0.68rem;color:#38bdf8">WAF · Rate Limit</div>
+          </div>
+          <div class="g-card" style="padding:0.75rem;text-align:center">
+            <div style="font-size:1.3rem">🔑</div>
+            <div style="font-weight:800;font-size:0.8rem;color:#f8fafc">Keycloak 24</div>
+            <div class="mono" style="font-size:0.68rem;color:#818cf8">OAuth2 / OIDC</div>
+          </div>
+          <div class="g-card" style="padding:0.75rem;text-align:center">
+            <div style="font-size:1.3rem">🏗️</div>
+            <div style="font-weight:800;font-size:0.8rem;color:#f8fafc">ICH Service</div>
+            <div class="mono" style="font-size:0.68rem;color:#34d399">PostGIS 3D AOL</div>
+          </div>
+          <div class="g-card" style="padding:0.75rem;text-align:center">
+            <div style="font-size:1.3rem">🪪</div>
+            <div style="font-weight:800;font-size:0.8rem;color:#f8fafc">PLH Service</div>
+            <div class="mono" style="font-size:0.68rem;color:#c084fc">Hyperledger Node</div>
+          </div>
+          <div class="g-card" style="padding:0.75rem;text-align:center">
+            <div style="font-size:1.3rem">🛸</div>
+            <div style="font-weight:800;font-size:0.8rem;color:#f8fafc">FAMH UTM</div>
+            <div class="mono" style="font-size:0.68rem;color:#fbbf24">Remote ID Telemetry</div>
+          </div>
+          <div class="g-card" style="padding:0.75rem;text-align:center">
+            <div style="font-size:1.3rem">🔧</div>
+            <div style="font-weight:800;font-size:0.8rem;color:#f8fafc">OCSH Safety</div>
+            <div class="mono" style="font-size:0.68rem;color:#f87171">XGBoost PSMS</div>
+          </div>
+          <div class="g-card" style="padding:0.75rem;text-align:center">
+            <div style="font-size:1.3rem">👥</div>
+            <div style="font-weight:800;font-size:0.8rem;color:#f8fafc">PSCPH Hub</div>
+            <div class="mono" style="font-size:0.68rem;color:#7dd3fc">MAVCOM Consumer</div>
+          </div>
+          <div class="g-card" style="padding:0.75rem;text-align:center">
+            <div style="font-size:1.3rem">💳</div>
+            <div style="font-weight:800;font-size:0.8rem;color:#f8fafc">Payment Service</div>
+            <div class="mono" style="font-size:0.68rem;color:#34d399">FPX / JomPAY API</div>
+          </div>
+        </div>
+
+        <!-- Sync & Async Specifications -->
+        <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:0.8rem;flex:1">
+          <div class="g-card" style="padding:0.85rem">
+            <span class="badge b-blue" style="margin-bottom:0.4rem;font-size:0.65rem">Synchronous · gRPC Proto</span>
+            <pre class="mono" style="font-size:0.74rem;color:#94a3b8;line-height:1.45;background:rgba(0,0,0,0.4);padding:0.6rem;border-radius:0.4rem"><span style="color:#38bdf8">service</span> LicenceRegistry {
+  <span style="color:#fbbf24">rpc</span> VerifyLicence (<span style="color:#c084fc">QRScan</span>)
+    <span style="color:#6ee7b7">returns</span> (<span style="color:#c084fc">CrewStatus</span>);
+}</pre>
+          </div>
+
+          <div class="g-card" style="padding:0.85rem">
+            <span class="badge b-purple" style="margin-bottom:0.4rem;font-size:0.65rem">Async · Service Bus Topics</span>
+            <div class="mono" style="font-size:0.74rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.2rem">
+              <div><code style="color:#38bdf8">licence.issued</code> → Blockchain, ICAO</div>
+              <div><code style="color:#34d399">uas.atf.approved</code> → FAMH, ICH Radar</div>
+              <div><code style="color:#f87171">safety.incident.mor</code> → AI Safety Engine</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 8: SOVEREIGN DATA ARCHITECTURE
+     ============================================================ -->
+<div class="slide" id="s7">
+  <div class="slide-box">
+        <div class="slide-hdr">
+      <div>
+<div class="slide-tag">Data Sovereignty &amp; Security</div>
+        <h2 class="slide-title">Data Architecture — <span class="grad">3-Tier Sovereign Model</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Fully compliant with National Cloud Policy (NCCP 2025). Tier 1 Restricted data strictly domiciled at MyGovCloud PDSA Cyberjaya.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: 3D Sovereign Cloud Render -->
+      <div style="flex:1" class="a-left d-2">
+        <div class="img-wrap" style="height:100%">
+          <img src="assets/sovereign_cloud.jpg" alt="Malaysian Sovereign Data Architecture">
+          <div class="img-tag-top"><span class="pulse-dot"></span> MYGOVCLOUD PDSA CYBERJAYA TIER 1</div>
+          <div class="img-caption-bar">
+            <h5>Zero Foreign Jurisdiction Compliance</h5>
+            <p>All pilot medical records, safety MOR incident reports, and classified aviation telemetry remain exclusively within Malaysian sovereign borders.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Schema & Data Tiers -->
+      <div style="flex:1.2;display:flex;flex-direction:column;gap:0.85rem" class="a-right d-3">
+        <div class="table-wrap">
+          <table class="c-table">
+            <thead>
+              <tr>
+                <th>PostgreSQL 16 Spatial Schema</th>
+                <th>Data Type</th>
+                <th>Storage &amp; Security Protocol</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code style="color:#38bdf8">caam.licences.blockchain_hash</code></td>
+                <td class="mono-col" style="color:#c084fc">VARCHAR(64)</td>
+                <td>Hyperledger Fabric SHA-256 Block Finality</td>
+              </tr>
+              <tr>
+                <td><code style="color:#38bdf8">caam.structures.geom</code></td>
+                <td class="mono-col" style="color:#34d399">PointZ (PostGIS)</td>
+                <td>3D WGS84 AOL Coordinates &amp; CAD 14 Surfaces</td>
+              </tr>
+              <tr>
+                <td><code style="color:#38bdf8">caam.telemetry.heartbeat</code></td>
+                <td class="mono-col" style="color:#fbbf24">TIMESTAMPTZ</td>
+                <td>InfluxDB 2-Year Real-Time Stream Rollup</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 3 Data Tiers Breakdown -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;flex:1">
+          <div class="g-card g-card-glow-red" style="padding:0.9rem">
+            <span class="badge b-red" style="margin-bottom:0.4rem;font-size:0.65rem">🔴 Tier 1 · Restricted</span>
+            <div style="font-weight:800;font-size:0.85rem;color:#fca5a5;margin-bottom:0.2rem">PDSA Cyberjaya</div>
+            <p style="font-size:0.78rem;color:#94a3b8;line-height:1.4">Licence PII, medical records, MOR incident logs, Hyperledger ledger.</p>
+          </div>
+
+          <div class="g-card g-card-glow-amber" style="padding:0.9rem">
+            <span class="badge b-amber" style="margin-bottom:0.4rem;font-size:0.65rem">🟡 Tier 2 · Confidential</span>
+            <div style="font-weight:800;font-size:0.85rem;color:#fde68a;margin-bottom:0.2rem">CFA Cloud MY East</div>
+            <p style="font-size:0.78rem;color:#94a3b8;line-height:1.4">AOC operator applications, FPX transactions, AI ML model weights.</p>
+          </div>
+
+          <div class="g-card g-card-glow-green" style="padding:0.9rem">
+            <span class="badge b-green" style="margin-bottom:0.4rem;font-size:0.65rem">🟢 Tier 3 · Public</span>
+            <div style="font-weight:800;font-size:0.85rem;color:#6ee7b7;margin-bottom:0.2rem">Global Edge CDN</div>
+            <p style="font-size:0.78rem;color:#94a3b8;line-height:1.4">Airline SLA rankings, public NOTAMs, drone restricted zone GeoJSON.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 9: ZERO-TRUST SECURITY & RBAC MATRIX
+     ============================================================ -->
+<div class="slide" id="s8">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Security &amp; Governance</div>
+        <h2 class="slide-title">Zero-Trust Security &amp; <span class="grad">RBAC Matrix</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Strict Keycloak 24 OAuth2/OIDC token authentication combined with fine-grained role-based access control.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left Column: 5-Stage Authentication Flow + Architecture Badges -->
+      <div style="flex:1.05;display:flex;flex-direction:column;justify-content:space-between;gap:0.75rem" class="a-left d-2">
+        <div class="g-card" style="padding:0.9rem 1.1rem;display:flex;flex-direction:column;gap:0.45rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
+            <h4 style="font-size:0.98rem;font-weight:800;color:#38bdf8">🔐 5-Stage Authentication &amp; Audit Flow</h4>
+            <span class="badge b-blue" style="font-size:0.7rem">OAuth2 / OIDC</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:0.4rem">
+            <div style="display:flex;gap:0.65rem;align-items:center;padding:0.45rem 0.65rem;border-radius:0.45rem;background:rgba(255,255,255,0.03);border-left:3px solid #38bdf8">
+              <span class="badge b-blue" style="font-size:0.75rem;padding:0.15rem 0.45rem">1</span>
+              <div style="font-size:0.79rem;color:#cbd5e1"><strong style="color:#ffffff">User Login:</strong> TLS 1.3 to Keycloak OIDC with MyKad eKYC biometric verification.</div>
+            </div>
+            <div style="display:flex;gap:0.65rem;align-items:center;padding:0.45rem 0.65rem;border-radius:0.45rem;background:rgba(255,255,255,0.03);border-left:3px solid #c084fc">
+              <span class="badge b-purple" style="font-size:0.75rem;padding:0.15rem 0.45rem">2</span>
+              <div style="font-size:0.79rem;color:#cbd5e1"><strong style="color:#ffffff">Signed JWT Token:</strong> RS256 token issued (15-min access expiry / 8-hr refresh).</div>
+            </div>
+            <div style="display:flex;gap:0.65rem;align-items:center;padding:0.45rem 0.65rem;border-radius:0.45rem;background:rgba(255,255,255,0.03);border-left:3px solid #34d399">
+              <span class="badge b-green" style="font-size:0.75rem;padding:0.15rem 0.45rem">3</span>
+              <div style="font-size:0.79rem;color:#cbd5e1"><strong style="color:#ffffff">Gateway Enforcement:</strong> Apigee validates JWT JWKS and injects authenticated identity.</div>
+            </div>
+            <div style="display:flex;gap:0.65rem;align-items:center;padding:0.45rem 0.65rem;border-radius:0.45rem;background:rgba(255,255,255,0.03);border-left:3px solid #fbbf24">
+              <span class="badge b-amber" style="font-size:0.75rem;padding:0.15rem 0.45rem">4</span>
+              <div style="font-size:0.79rem;color:#cbd5e1"><strong style="color:#ffffff">Microservice RBAC:</strong> Spring Security enforces method-level <code>@PreAuthorize</code> ACL rules.</div>
+            </div>
+            <div style="display:flex;gap:0.65rem;align-items:center;padding:0.45rem 0.65rem;border-radius:0.45rem;background:rgba(255,255,255,0.03);border-left:3px solid #f87171">
+              <span class="badge b-red" style="font-size:0.75rem;padding:0.15rem 0.45rem">5</span>
+              <div style="font-size:0.79rem;color:#cbd5e1"><strong style="color:#ffffff">Immutable Audit:</strong> 7-year tamper-evident SIEM audit logging for legal compliance.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zero-Trust Compliance Pillars Banner -->
+        <div class="g-card g-card-glow-blue" style="padding:0.75rem 1rem">
+          <div style="font-size:0.84rem;font-weight:800;color:#93c5fd;margin-bottom:0.35rem">🛡️ Core Sovereign Security Controls</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;font-size:0.76rem;color:#cbd5e1">
+            <div>✓ <strong>Least Privilege Access:</strong> Zero default trusts</div>
+            <div>✓ <strong>Hardware HSM:</strong> FIPS 140-3 Cyberjaya</div>
+            <div>✓ <strong>PDPA Act 709:</strong> AES-256 GCM at Rest</div>
+            <div>✓ <strong>Mutual TLS (mTLS):</strong> Istio Service Mesh</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: RBAC Matrix Table + 4 Security Governance Cards -->
+      <div style="flex:1.35;display:flex;flex-direction:column;justify-content:space-between;gap:0.75rem" class="a-right d-3">
+        <div class="table-wrap" style="flex-shrink:0">
+          <table class="c-table">
+            <thead>
+              <tr>
+                <th>Stakeholder Role</th>
+                <th>ICH (AOL)</th>
+                <th>PLH (Licence)</th>
+                <th>FAMH (UTM)</th>
+                <th>OCSH (AOC)</th>
+                <th>PSCPH</th>
+                <th>AI PSMS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color:#f8fafc">CAAM Director General</strong></td>
+                <td><span class="badge b-green">FULL</span></td>
+                <td><span class="badge b-green">FULL</span></td>
+                <td><span class="badge b-green">FULL</span></td>
+                <td><span class="badge b-green">FULL</span></td>
+                <td><span class="badge b-green">FULL</span></td>
+                <td><span class="badge b-green">FULL</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color:#93c5fd">Safety &amp; Flight Inspector</strong></td>
+                <td><span class="badge b-blue">READ</span></td>
+                <td><span class="badge b-blue">READ</span></td>
+                <td><span class="badge b-blue">READ</span></td>
+                <td><span class="badge b-green">FULL</span></td>
+                <td>—</td>
+                <td><span class="badge b-green">FULL</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color:#fde68a">Air Traffic Officer (ATC)</strong></td>
+                <td><span class="badge b-blue">READ</span></td>
+                <td>—</td>
+                <td><span class="badge b-green">FULL</span></td>
+                <td>—</td>
+                <td>—</td>
+                <td><span class="badge b-blue">READ</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color:#f472b6">Commercial Airline (AOC)</strong></td>
+                <td><span class="badge b-purple">OWN</span></td>
+                <td><span class="badge b-purple">OWN</span></td>
+                <td><span class="badge b-blue">READ</span></td>
+                <td><span class="badge b-purple">OWN</span></td>
+                <td><span class="badge b-blue">READ</span></td>
+                <td><span class="badge b-blue">READ</span></td>
+              </tr>
+              <tr>
+                <td><strong style="color:#c4b5fd">Licensed Pilot / Crew</strong></td>
+                <td>—</td>
+                <td><span class="badge b-purple">OWN</span></td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><strong style="color:#6ee7b7">Commercial Drone Operator</strong></td>
+                <td>—</td>
+                <td><span class="badge b-purple">OWN</span></td>
+                <td><span class="badge b-purple">OWN</span></td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><strong style="color:#94a3b8">Public Citizen / Consumer</strong></td>
+                <td><span class="badge b-blue">READ</span></td>
+                <td>—</td>
+                <td>—</td>
+                <td>—</td>
+                <td><span class="badge b-purple">OWN</span></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 4 Security Governance Cards Filling Lower Right Section -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem">
+          <div class="g-card g-card-glow-blue" style="padding:0.65rem 0.85rem">
+            <div style="font-size:0.82rem;font-weight:800;color:#38bdf8;margin-bottom:0.15rem">🔒 Hardware HSM Isolation</div>
+            <div style="font-size:0.75rem;color:#cbd5e1;line-height:1.35">FIPS 140-3 Level 4 HSM keys hosted strictly within PDSA Cyberjaya sovereign perimeter.</div>
+          </div>
+          <div class="g-card g-card-glow-green" style="padding:0.65rem 0.85rem">
+            <div style="font-size:0.82rem;font-weight:800;color:#34d399;margin-bottom:0.15rem">🪪 MyKad eKYC Assurance</div>
+            <div style="font-size:0.75rem;color:#cbd5e1;line-height:1.35">Instant biometric identity proofing preventing credential spoofing across pilot &amp; drone registries.</div>
+          </div>
+          <div class="g-card g-card-glow-purple" style="padding:0.65rem 0.85rem">
+            <div style="font-size:0.82rem;font-weight:800;color:#c084fc;margin-bottom:0.15rem">🌐 Mutual TLS 1.3 Mesh</div>
+            <div style="font-size:0.75rem;color:#cbd5e1;line-height:1.35">Istio sidecar proxies enforce end-to-end cryptographic mutual authentication for all 8 microservices.</div>
+          </div>
+          <div class="g-card g-card-glow-amber" style="padding:0.65rem 0.85rem">
+            <div style="font-size:0.82rem;font-weight:800;color:#fbbf24;margin-bottom:0.15rem">📜 Legal Audit Compliance</div>
+            <div style="font-size:0.75rem;color:#cbd5e1;line-height:1.35">WORM (Write-Once-Read-Many) append-only audit trail meeting Civil Aviation Act 771 admissibility.</div>
+          </div>
+        </div>
+
+        <!-- RBAC Bottom Callout -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0.85rem;background:rgba(15,23,42,0.6);border:1px solid rgba(56,189,248,0.2);border-radius:0.5rem;font-size:0.76rem">
+          <span style="color:#cbd5e1"><strong style="color:#38bdf8">Legend:</strong> <strong>FULL:</strong> Read/Write/Approve · <strong>READ:</strong> Query/Audit · <strong>OWN:</strong> Self-service record access only</span>
+          <span class="badge b-green" style="font-size:0.7rem;padding:0.15rem 0.5rem">Zero Data Leakage</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 10: IOT EDGE & PREDICTIVE SAFETY AI
+     ============================================================ -->
+<div class="slide" id="s9">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Intelligent Enforcement</div>
+        <h2 class="slide-title">IoT Edge Telemetry &amp; <span class="grad">AI Predictive Safety</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Real-time 3D OLS obstacle penetration calculations paired with XGBoost and LSTM machine learning risk forecasting.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: 3D OLS Image -->
+      <div style="flex:1;min-width:0" class="a-left d-2">
+        <div class="img-wrap" style="height:100%">
+          <img src="assets/ols3d.jpg" alt="3D OLS Surface Analysis">
+          <div class="img-tag-top"><span class="pulse-dot-red"></span> 3D OLS GIS ENGINE · CAD 14 AIRPORT MODEL</div>
+          <div class="img-caption-bar">
+            <h5>Sub-3-Second Obstacle Penetration Scan</h5>
+            <p>PostGIS `ST_3DIntersects` identifies telecommunication tower penetrations into approach and transitional funnels in real-time.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Clean Pure 3D AI Safety Visual + High-Tech Anomaly Card -->
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0.75rem" class="a-right d-3">
+        <div class="img-wrap" style="flex:1;min-height:0">
+          <img src="assets/ai_safety_pure.jpg" alt="AI Safety Predictive Airspace Radar Grid">
+          <div class="img-tag-top"><span class="pulse-dot"></span> NEURAL PREDICTIVE SAFETY RADAR (PSMS)</div>
+          <div class="img-caption-bar">
+            <h5>3D Holographic Fleet Telemetry &amp; Risk Prediction Matrix</h5>
+            <p>Real-time ML risk vectors analyzing 34 AOC operators and 14,200 structures across Peninsular and East Malaysia.</p>
+          </div>
+        </div>
+
+        <div class="g-card g-card-glow-blue" style="padding:0.85rem 1rem;flex-shrink:0">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+            <h5 style="font-size:0.95rem;font-weight:800;color:#ffffff">XGBoost &amp; LSTM Multi-Factor Risk Scoring</h5>
+            <span class="badge b-green" style="font-size:0.74rem">Fleet Safety Index: 73/100 · Controlled</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem;text-align:center;margin-bottom:0.4rem">
+            <div style="background:rgba(255,255,255,0.03);padding:0.35rem 0.2rem;border-radius:0.35rem">
+              <div style="font-size:0.7rem;color:#94a3b8">AOC Violations</div>
+              <div style="font-size:0.85rem;font-weight:900;color:#6ee7b7">0.12%</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);padding:0.35rem 0.2rem;border-radius:0.35rem">
+              <div style="font-size:0.7rem;color:#94a3b8">Pilot Fatigue</div>
+              <div style="font-size:0.85rem;font-weight:900;color:#fde68a">Low (2.1%)</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);padding:0.35rem 0.2rem;border-radius:0.35rem">
+              <div style="font-size:0.7rem;color:#94a3b8">Maint. Overdue</div>
+              <div style="font-size:0.85rem;font-weight:900;color:#38bdf8">0 Flags</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);padding:0.35rem 0.2rem;border-radius:0.35rem">
+              <div style="font-size:0.7rem;color:#94a3b8">Active OLS Alerts</div>
+              <div style="font-size:0.85rem;font-weight:900;color:#fca5a5">3 Towers</div>
+            </div>
+          </div>
+          <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.4">
+            Automated anomaly forecasting flags high-risk aircraft and unlit obstacle towers, triggering inspector tablet audits prior to takeoff.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ============================================================
+     SLIDE 11: API & 3D UTM AIRSPACE SIMULATION
+     ============================================================ -->
+<div class="slide" id="s10">
+  <div class="slide-box">
+        <div class="slide-hdr">
+      <div>
+<div class="slide-tag">Enterprise Integration</div>
+        <h2 class="slide-title">Enterprise API &amp; <span class="grad">3D UTM Airspace Management</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          OpenAPI 3.1 gateway and real-time UTM drone transit corridors over Kuala Lumpur and major international airports.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: Expanded API Endpoints Table -->
+      <div class="table-wrap a-left d-2" style="flex:1.1;display:flex;flex-direction:column;justify-content:space-between">
+        <table class="c-table">
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Endpoint Path</th>
+              <th>Functionality &amp; SLA</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge b-blue">GET</span></td>
+              <td><code class="mono-col">/v2/licences/{id}/verify</code></td>
+              <td>QR Blockchain Instant Verification (&lt;3s)</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-green">POST</span></td>
+              <td><code class="mono-col">/v2/uas/atf/authorise</code></td>
+              <td>Automated Drone Flight Clearance (&lt;24h)</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-purple">POST</span></td>
+              <td><code class="mono-col">/v2/iot/telemetry/heartbeat</code></td>
+              <td>AOL MQTT Structure Sensor Ingestion</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-amber">GET</span></td>
+              <td><code class="mono-col">/v2/psms/risk-score/{aoc}</code></td>
+              <td>AI Operator Predictive Risk Score</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-red">POST</span></td>
+              <td><code class="mono-col">/v2/enforcement/fine/s24o</code></td>
+              <td>Automated Legal Fine Dispatch</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-blue">GET</span></td>
+              <td><code class="mono-col">/v2/consumer/sla/airline</code></td>
+              <td>Live MAVCOM Passenger SLA Feed</td>
+            </tr>
+            <tr>
+              <td><span class="badge b-green">POST</span></td>
+              <td><code class="mono-col">/v2/icao/usoap/sync</code></td>
+              <td>ICAO Continuous Monitoring Export</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="padding:0.75rem 1rem;background:rgba(15,23,42,0.8);border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;color:#94a3b8">
+          <span><strong style="color:#38bdf8">Rate Limit:</strong> 1,000 req/min</span>
+          <span><strong style="color:#34d399">Avg Latency:</strong> 120ms (P50)</span>
+          <span><strong style="color:#c084fc">Gateway:</strong> Apigee X Enterprise</span>
+        </div>
+      </div>
+
+      <!-- Right: 3D UTM Airspace Render -->
+      <div style="flex:1.2" class="a-right d-3">
+        <div class="img-wrap" style="height:100%">
+          <img src="assets/utm.jpg" alt="3D UTM Airspace Simulation">
+          <div class="img-tag-top"><span class="pulse-dot"></span> 3D UTM AIRSPACE SIMULATION · KL/KLIA</div>
+          <div class="img-caption-bar">
+            <h5>Dynamic Geofencing &amp; Remote ID Corridors</h5>
+            <p>Red restricted zones around airports with multi-tier drone delivery corridors and ASTM F3411 Remote ID beacon integration.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 12: DEVOPS PIPELINE & SLA COMMITMENTS
+     ============================================================ -->
+<div class="slide" id="s11">
+  <div class="slide-box">
+        <div class="slide-hdr">
+      <div>
+<div class="slide-tag">Reliability &amp; Delivery</div>
+        <h2 class="slide-title">DevOps CI/CD Pipeline &amp; <span class="grad">SLA Commitments</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Automated GitOps pipeline with zero-downtime rolling Kubernetes deployments backed by contractual 99.9% uptime SLA.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: 3D DevOps Pipeline Render -->
+      <div style="flex:1" class="a-left d-2">
+        <div class="img-wrap" style="height:100%">
+          <img src="assets/devops_pipeline.jpg" alt="3D DevOps CI/CD Pipeline">
+          <div class="img-tag-top"><span class="pulse-dot"></span> GITOPS AUTOMATED PIPELINE</div>
+          <div class="img-caption-bar">
+            <h5>Git Push → ArgoCD → Kubernetes MyGovCloud</h5>
+            <p>SonarQube code scan, Testcontainers automated suite (&gt;80% coverage), and Trivy CVE scanning before live deployment.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: SLA Commitments Table -->
+      <div class="table-wrap a-right d-3" style="flex:1.2">
+        <table class="c-table">
+          <thead>
+            <tr>
+              <th>Performance Metric</th>
+              <th>Contractual SLA Target</th>
+              <th>Enforcement &amp; Penalty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Platform Availability</strong></td>
+              <td class="mono-col" style="color:#34d399">99.90% Uptime</td>
+              <td>10% fee reduction per 0.1% breach</td>
+            </tr>
+            <tr>
+              <td><strong>API Latency (P95)</strong></td>
+              <td class="mono-col" style="color:#38bdf8">&lt; 800 ms</td>
+              <td>Automated SLA credit trigger</td>
+            </tr>
+            <tr>
+              <td><strong>Licence Issuance</strong></td>
+              <td class="mono-col" style="color:#c084fc">&lt; 5 Business Days</td>
+              <td>Monthly JSC oversight review</td>
+            </tr>
+            <tr>
+              <td><strong>QR Verification Scan</strong></td>
+              <td class="mono-col" style="color:#fbbf24">&lt; 3 Seconds</td>
+              <td>Global real-time latency monitoring</td>
+            </tr>
+            <tr>
+              <td><strong>IoT AOL Fault Dispatch</strong></td>
+              <td class="mono-col" style="color:#f87171">&lt; 60 Seconds</td>
+              <td>Automated enforcement notice</td>
+            </tr>
+            <tr>
+              <td><strong>Disaster Recovery (RTO / RPO)</strong></td>
+              <td class="mono-col" style="color:#34d399">&lt; 4 Hours / &lt; 15 Mins</td>
+              <td>Multi-zone hot standby failover</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 13: FINANCIAL MODEL & ROI
+     ============================================================ -->
+<div class="slide" id="s12">
+  <div class="slide-box">
+        <div class="slide-hdr">
+      <div>
+<div class="slide-tag">Financial Architecture</div>
+        <h2 class="slide-title">Self-Funding PPP Model — <span class="grad-green">RM 41.17M Net Benefit</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Public-Private Partnership (80% CAAM / 20% PMT) achieving full capital expenditure recovery by Month 18.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: Big Number & CapEx Chart -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:1rem" class="a-left d-2">
+        <div class="g-card g-card-glow-green" style="text-align:center;padding:1.4rem">
+          <div style="font-size:0.85rem;font-weight:800;color:#6ee7b7;letter-spacing:0.1em">3-YEAR NET BENEFIT (BASE SCENARIO)</div>
+          <div style="font-size:3.5rem;font-weight:900;line-height:1.1;margin:0.4rem 0" class="grad-green">RM 41.17M</div>
+          <div style="font-size:0.85rem;color:#94a3b8">Total Revenue: RM 54.0M · Total Investment: RM 12.83M</div>
+        </div>
+
+        <div class="g-card" style="flex:1;display:flex;flex-direction:column;justify-content:space-between">
+          <div style="font-size:0.9rem;font-weight:800;color:#ffffff;margin-bottom:0.3rem">Year 1 CapEx Breakdown (RM 6.07M)</div>
+          <div style="flex:1;min-height:160px;position:relative">
+            <canvas id="capexChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Revenue Trajectory Chart -->
+      <div class="g-card a-right d-3" style="flex:1.2;display:flex;flex-direction:column;justify-content:space-between">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+          <h4 style="font-size:1.05rem;font-weight:800;color:#ffffff">Revenue vs Investment Trajectory (3 Years)</h4>
+          <span class="badge b-green">Full Payback: M18</span>
+        </div>
+        <div style="flex:1;min-height:220px;position:relative">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 13: 24-MONTH PHASED ROADMAP
+     ============================================================ -->
+<div class="slide" id="s13">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Implementation Strategy</div>
+        <h2 class="slide-title">24-Month Phased Roadmap — <span class="grad">Zero-Downtime Delivery</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Structured four-phase deployment ensuring continuous regulatory operations without disruption to aviation stakeholders.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body" style="flex-direction:column;gap:0.85rem">
+      <!-- Top: 3D Roadmap Pipeline Visual -->
+      <div style="flex:1;min-height:0" class="a-up d-1">
+        <div class="img-wrap" style="height:100%;min-height:220px;max-height:240px">
+          <img src="assets/roadmap_phases.jpg" alt="CAAM 24-Month Digital Transformation Roadmap">
+          <div class="img-tag-top"><span class="pulse-dot"></span> 24-MONTH TRANSFORMATION TIMELINE &amp; SPRINT ARCHITECTURE</div>
+          <div class="img-caption-bar" style="padding:0.6rem 1rem">
+            <h5 style="font-size:0.85rem;margin-bottom:0.1rem">Continuous Delivery &amp; Milestone Roadmap (M01–M24)</h5>
+            <p style="font-size:0.75rem;line-height:1.3">Sequential agile releases across Sovereign Cloud, Blockchain Licensing, 3D OLS, UTM Airspace, AI Safety, and Full Source Escrow Handover.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom: 4 Compact Phase Cards -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.85rem;flex:1.1" class="a-up d-2">
+        <div class="g-card g-card-glow-blue" style="padding:0.75rem 0.85rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+              <span class="badge b-blue" style="font-size:0.68rem;padding:0.15rem 0.45rem">M01–M06</span>
+              <span style="font-size:0.72rem;color:#38bdf8;font-weight:800">Sprint 1</span>
+            </div>
+            <h4 style="font-size:0.92rem;font-weight:800;color:#ffffff;margin-bottom:0.25rem">Phase 1: Foundation</h4>
+            <p style="font-size:0.76rem;color:#94a3b8;line-height:1.35;margin-bottom:0.4rem">Kubernetes setup, Keycloak IAM, MyKad eKYC, and PostGIS database.</p>
+          </div>
+          <ul style="list-style:none;font-size:0.75rem;color:#cbd5e1;line-height:1.45;display:flex;flex-direction:column;gap:0.15rem">
+            <li>✓ MyGovCloud PDSA Cluster</li>
+            <li>✓ eCLIPSE API Integration</li>
+            <li>✓ Initial 500 AOL IoT Sensors</li>
+          </ul>
+        </div>
+
+        <div class="g-card g-card-glow-purple" style="padding:0.75rem 0.85rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+              <span class="badge b-purple" style="font-size:0.68rem;padding:0.15rem 0.45rem">M07–M12</span>
+              <span style="font-size:0.72rem;color:#c084fc;font-weight:800">Sprint 2</span>
+            </div>
+            <h4 style="font-size:0.92rem;font-weight:800;color:#ffffff;margin-bottom:0.25rem">Phase 2: Core Hubs</h4>
+            <p style="font-size:0.76rem;color:#94a3b8;line-height:1.35;margin-bottom:0.4rem">Digital licensing issuance, 3D OLS engine, and Hyperledger blockchain.</p>
+          </div>
+          <ul style="list-style:none;font-size:0.75rem;color:#cbd5e1;line-height:1.45;display:flex;flex-direction:column;gap:0.15rem">
+            <li>✓ Pilot Mobile Crew ID</li>
+            <li>✓ 3D OLS Penetration Engine</li>
+            <li>✓ FPX / JomPAY Gateway</li>
+          </ul>
+        </div>
+
+        <div class="g-card g-card-glow-amber" style="padding:0.75rem 0.85rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+              <span class="badge b-amber" style="font-size:0.68rem;padding:0.15rem 0.45rem">M13–M18</span>
+              <span style="font-size:0.72rem;color:#fbbf24;font-weight:800">Sprint 3</span>
+            </div>
+            <h4 style="font-size:0.92rem;font-weight:800;color:#ffffff;margin-bottom:0.25rem">Phase 3: UTM &amp; Safety</h4>
+            <p style="font-size:0.76rem;color:#94a3b8;line-height:1.35;margin-bottom:0.4rem">Drone UTM airspace management and AI predictive safety (PSMS).</p>
+          </div>
+          <ul style="list-style:none;font-size:0.75rem;color:#cbd5e1;line-height:1.45;display:flex;flex-direction:column;gap:0.15rem">
+            <li>✓ Digital ATF Authorisation</li>
+            <li>✓ Remote ID Drone Tracking</li>
+            <li>✓ XGBoost Risk Model</li>
+          </ul>
+        </div>
+
+        <div class="g-card g-card-glow-green" style="padding:0.75rem 0.85rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+              <span class="badge b-green" style="font-size:0.68rem;padding:0.15rem 0.45rem">M19–M24</span>
+              <span style="font-size:0.72rem;color:#34d399;font-weight:800">Sprint 4</span>
+            </div>
+            <h4 style="font-size:0.92rem;font-weight:800;color:#ffffff;margin-bottom:0.25rem">Phase 4: Transfer</h4>
+            <p style="font-size:0.76rem;color:#94a3b8;line-height:1.35;margin-bottom:0.4rem">Post-MAVCOM consumer portal and complete technology handover.</p>
+          </div>
+          <ul style="list-style:none;font-size:0.75rem;color:#cbd5e1;line-height:1.45;display:flex;flex-direction:column;gap:0.15rem">
+            <li>✓ FlyRights AI Consumer Bot</li>
+            <li>✓ 20 Officers Certified</li>
+            <li>✓ Full Source Code Escrow</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 14: REGIONAL COMPETITIVE BENCHMARK
+     ============================================================ -->
+<div class="slide" id="s14">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Global &amp; Regional Standing</div>
+        <h2 class="slide-title">Regional Benchmark — <span class="grad">ASEAN Aviation Leadership</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Positioning CAAM ahead of regional peers (Singapore CAAS, UAE GCAA, Australia CASA) in unified digital capability.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body">
+      <!-- Left: 3D Regional Benchmark Cockpit Visual -->
+      <div style="flex:1;min-width:0" class="a-left d-2">
+        <div class="img-wrap" style="height:100%;min-height:460px">
+          <img src="assets/regional_benchmark.jpg" alt="ASEAN Aviation Regulatory Benchmark Radar">
+          <div class="img-tag-top"><span class="pulse-dot"></span> REGIONAL REGULATORY RADAR COMPARISON</div>
+          <div class="img-caption-bar">
+            <h5>ASEAN Benchmark &amp; Scoring Cockpit</h5>
+            <p>Malaysia CAAM 2030 leads in unified technical + economic oversight, real-time 3D OLS, and sovereign blockchain credential verification.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Comparative Table -->
+      <div style="flex:1.2;min-width:0;display:flex;flex-direction:column;justify-content:space-between" class="a-right d-3">
+        <div class="table-wrap">
+          <table class="c-table" style="font-size:0.82rem">
+            <thead>
+              <tr>
+                <th style="padding:0.6rem 0.8rem">Capability Dimension</th>
+                <th style="color:#38bdf8;padding:0.6rem 0.8rem">CAAM 2030 (MY)</th>
+                <th style="padding:0.6rem 0.8rem">CAAS WINGS (SG)</th>
+                <th style="padding:0.6rem 0.8rem">UAE GCAA</th>
+                <th style="padding:0.6rem 0.8rem">CASA (AU)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:0.55rem 0.8rem"><strong>Unified Tech + Eco Portal</strong></td>
+                <td style="color:#34d399;font-weight:800;padding:0.55rem 0.8rem">✓ Fully Unified (Act 771)</td>
+                <td style="padding:0.55rem 0.8rem">✕ Split (MOT/CAAS)</td>
+                <td style="padding:0.55rem 0.8rem">◑ Partial</td>
+                <td style="padding:0.55rem 0.8rem">✕ Split Bodies</td>
+              </tr>
+              <tr>
+                <td style="padding:0.55rem 0.8rem"><strong>3D Airport OLS Engine</strong></td>
+                <td style="color:#34d399;font-weight:800;padding:0.55rem 0.8rem">✓ Real-Time (&lt;3s)</td>
+                <td style="padding:0.55rem 0.8rem">◑ Batch Queue</td>
+                <td style="padding:0.55rem 0.8rem">✕ Manual GIS</td>
+                <td style="padding:0.55rem 0.8rem">◑ 3rd-Party</td>
+              </tr>
+              <tr>
+                <td style="padding:0.55rem 0.8rem"><strong>Blockchain Crew Identity</strong></td>
+                <td style="color:#34d399;font-weight:800;padding:0.55rem 0.8rem">✓ Hyperledger QR</td>
+                <td style="padding:0.55rem 0.8rem">✕ Central DB</td>
+                <td style="padding:0.55rem 0.8rem">✓ Blockchain Pilot</td>
+                <td style="padding:0.55rem 0.8rem">✕ PDF / Paper</td>
+              </tr>
+              <tr>
+                <td style="padding:0.55rem 0.8rem"><strong>Drone UTM Airspace</strong></td>
+                <td style="color:#34d399;font-weight:800;padding:0.55rem 0.8rem">✓ Integrated Remote ID</td>
+                <td style="padding:0.55rem 0.8rem">✓ FlyIt (Separate)</td>
+                <td style="padding:0.55rem 0.8rem">◑ Basic Portal</td>
+                <td style="padding:0.55rem 0.8rem">◑ Disconnected</td>
+              </tr>
+              <tr>
+                <td style="padding:0.55rem 0.8rem"><strong>AI Predictive Safety</strong></td>
+                <td style="color:#34d399;font-weight:800;padding:0.55rem 0.8rem">✓ XGBoost + LSTM</td>
+                <td style="padding:0.55rem 0.8rem">◑ Rule Engine</td>
+                <td style="padding:0.55rem 0.8rem">✓ Analytics</td>
+                <td style="padding:0.55rem 0.8rem">✕ Reactive Logs</td>
+              </tr>
+              <tr>
+                <td style="padding:0.55rem 0.8rem"><strong>Sovereign Cloud Residency</strong></td>
+                <td style="color:#34d399;font-weight:800;padding:0.55rem 0.8rem">✓ MyGovCloud Cyberjaya</td>
+                <td style="padding:0.55rem 0.8rem">✓ SG GovCloud</td>
+                <td style="padding:0.55rem 0.8rem">✓ UAE In-Country</td>
+                <td style="padding:0.55rem 0.8rem">✓ AU GovCloud</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="padding:0.65rem 0.95rem;background:rgba(255,255,255,0.04);border-radius:0.5rem;font-size:0.78rem;color:#94a3b8;border:1px solid rgba(255,255,255,0.06)">
+          <strong style="color:#38bdf8">Competitive Advantage:</strong> Malaysia becomes the first nation in APAC to deploy a single unified sovereign regulatory stack fusing technical flight safety and post-merger economic regulation.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 15: FINANCIAL SCENARIOS & SELF-CHALLENGE
+     ============================================================ -->
+<div class="slide" id="s15">
+  <div class="slide-box">
+    <div class="slide-hdr">
+      <div>
+        <div class="slide-tag">Risk &amp; Sensitivity Analysis</div>
+        <h2 class="slide-title">Financial Sensitivity &amp; <span class="grad-gold">Executive Self-Challenge</span></h2>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem">
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+        <div class="slide-subtitle">
+          Stress-tested across 3 macroeconomic scenarios alongside proactive regulatory risk mitigation strategies.
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-body" style="flex-direction:column;gap:0.75rem">
+      <!-- 3 Scenarios Cards (Dense & Detailed) -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.85rem" class="a-up d-1">
+        <div class="g-card g-card-glow-amber" style="padding:0.85rem 0.95rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
+            <span class="badge b-amber" style="font-size:0.7rem;padding:0.15rem 0.45rem">Conservative (-30% Traffic)</span>
+            <span style="font-size:0.75rem;color:#fde68a;font-weight:700">Payback: M22</span>
+          </div>
+          <div style="font-size:1.75rem;font-weight:900;color:#fbbf24" class="mono">RM 22.80M Net</div>
+          <ul style="list-style:none;font-size:0.76rem;color:#cbd5e1;line-height:1.4;margin-top:0.25rem;display:flex;flex-direction:column;gap:0.1rem">
+            <li>• 3-Year Gross Revenue: RM 35.63M</li>
+            <li>• CapEx Recovery: Month 22 (Full Payback)</li>
+            <li>• Buffer: 100% self-funding with zero Treasury grant</li>
+          </ul>
+        </div>
+
+        <div class="g-card g-card-glow-green" style="padding:0.85rem 0.95rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
+            <span class="badge b-green" style="font-size:0.7rem;padding:0.15rem 0.45rem">Base Case (Realistic)</span>
+            <span style="font-size:0.75rem;color:#6ee7b7;font-weight:700">Payback: M18</span>
+          </div>
+          <div style="font-size:1.75rem;font-weight:900;color:#34d399" class="mono">RM 41.17M Net</div>
+          <ul style="list-style:none;font-size:0.76rem;color:#cbd5e1;line-height:1.4;margin-top:0.25rem;display:flex;flex-direction:column;gap:0.1rem">
+            <li>• 3-Year Gross Revenue: RM 54.00M</li>
+            <li>• Total 3-Year Investment: RM 12.83M</li>
+            <li>• Net Benefit: RM 41.17M distributed under PPP model</li>
+          </ul>
+        </div>
+
+        <div class="g-card g-card-glow-blue" style="padding:0.85rem 0.95rem">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem">
+            <span class="badge b-blue" style="font-size:0.7rem;padding:0.15rem 0.45rem">Optimistic (+25% AAM)</span>
+            <span style="font-size:0.75rem;color:#7dd3fc;font-weight:700">Payback: M14</span>
+          </div>
+          <div style="font-size:1.75rem;font-weight:900;color:#38bdf8" class="mono">RM 61.40M Net</div>
+          <ul style="list-style:none;font-size:0.76rem;color:#cbd5e1;line-height:1.4;margin-top:0.25rem;display:flex;flex-direction:column;gap:0.1rem">
+            <li>• 3-Year Gross Revenue: RM 74.23M</li>
+            <li>• Rapid commercial drone &amp; eVTOL adoption</li>
+            <li>• Surpluses reinvested into CAAM Radar &amp; UTM expansion</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4 Self-Challenge Q&A Grid (Fully Detailed) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;flex:1" class="a-up d-2">
+        <div class="g-card" style="padding:0.75rem 0.9rem">
+          <div style="font-size:0.82rem;font-weight:800;color:#f87171;margin-bottom:0.2rem">Q1: What if tower owners resist registering AOL structures?</div>
+          <p style="font-size:0.76rem;color:#cbd5e1;line-height:1.35">
+            <strong style="color:#34d399">Mitigation:</strong> Section 24O statutory fine enforcement (RM 50k–100k) + mandatory digital API clearance linkage with MCMC telco spectrum licences ensures &gt;95% voluntary compliance within 12 months.
+          </p>
+        </div>
+
+        <div class="g-card" style="padding:0.75rem 0.9rem">
+          <div style="font-size:0.82rem;font-weight:800;color:#f87171;margin-bottom:0.2rem">Q2: What if legacy eCLIPSE licensing data contains inaccuracies?</div>
+          <p style="font-size:0.76rem;color:#cbd5e1;line-height:1.35">
+            <strong style="color:#34d399">Mitigation:</strong> Phase 1 includes an automated data cleansing ETL pipeline with MyKad eKYC validation to deduplicate records before cryptographic hashing into Hyperledger Fabric.
+          </p>
+        </div>
+
+        <div class="g-card" style="padding:0.75rem 0.9rem">
+          <div style="font-size:0.82rem;font-weight:800;color:#f87171;margin-bottom:0.2rem">Q3: How is sovereign data protected against foreign CLOUD Acts?</div>
+          <p style="font-size:0.76rem;color:#cbd5e1;line-height:1.35">
+            <strong style="color:#34d399">Mitigation:</strong> Fully domiciled at MyGovCloud PDSA Cyberjaya (Tier 1 Restricted) under sovereign Malaysian encryption keys (HSM FIPS 140-3 Level 4) with zero offshore routing.
+          </p>
+        </div>
+
+        <div class="g-card" style="padding:0.75rem 0.9rem">
+          <div style="font-size:0.82rem;font-weight:800;color:#f87171;margin-bottom:0.2rem">Q4: What guarantees 99.9% uptime during airspace peaks?</div>
+          <p style="font-size:0.76rem;color:#cbd5e1;line-height:1.35">
+            <strong style="color:#34d399">Mitigation:</strong> Active-active Kubernetes cluster with Horizontal Pod Autoscaling (HPA), multi-zone disaster recovery (RTO &lt;4h / RPO &lt;15m), and contractual SLA financial penalty clauses.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SLIDE 17: CALL TO ACTION & NEXT STEPS
+     ============================================================ -->
+<div class="slide" id="s16">
+  <div class="slide-box" style="justify-content:center;align-items:center;text-align:center">
+    <div class="a-pop d-1" style="margin-bottom:1rem">
+      <span class="badge b-green" style="font-size:0.88rem;padding:0.4rem 1.2rem">
+        <span class="pulse-dot"></span> IMMEDIATE STRATEGIC APPROVAL REQUEST
+      </span>
+    </div>
+
+    <h2 class="a-up d-2" style="font-size:3.5rem;font-weight:900;line-height:1.15;max-width:65rem;margin-bottom:1rem">
+      Transform CAAM into <span class="grad">ASEAN's Digital Benchmark</span>
+    </h2>
+
+    <p class="a-up d-3" style="font-size:1.15rem;color:#cbd5e1;max-width:48rem;line-height:1.6;margin-bottom:2.2rem">
+      The technical architecture, financial model, and sovereign security safeguards are fully prepared for immediate Joint Steering Committee execution.
+    </p>
+
+    <!-- 4 Immediate Action Steps -->
+    <div class="a-up d-4" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;width:100%;max-width:1150px;margin-bottom:1.5rem">
+      <div class="g-card g-card-glow-blue" style="padding:1.1rem;text-align:center">
+        <div style="font-size:1.6rem;font-weight:900;color:#38bdf8" class="mono">Step 1</div>
+        <div style="font-weight:800;font-size:0.92rem;color:#ffffff;margin-top:0.3rem">JSC Charter</div>
+        <div style="font-size:0.78rem;color:#94a3b8;margin-top:0.2rem">Establish CAAM-PMT Committee</div>
+      </div>
+
+      <div class="g-card g-card-glow-purple" style="padding:1.1rem;text-align:center">
+        <div style="font-size:1.6rem;font-weight:900;color:#c084fc" class="mono">Step 2</div>
+        <div style="font-weight:800;font-size:0.92rem;color:#ffffff;margin-top:0.3rem">Cloud Provisioning</div>
+        <div style="font-size:0.78rem;color:#94a3b8;margin-top:0.2rem">MyGovCloud Cyberjaya Tenant</div>
+      </div>
+
+      <div class="g-card g-card-glow-amber" style="padding:1.1rem;text-align:center">
+        <div style="font-size:1.6rem;font-weight:900;color:#fbbf24" class="mono">Step 3</div>
+        <div style="font-weight:800;font-size:0.92rem;color:#ffffff;margin-top:0.3rem">Phase 1 Sprint</div>
+        <div style="font-size:0.78rem;color:#94a3b8;margin-top:0.2rem">Deploy IAM &amp; 3D OLS Engine</div>
+      </div>
+
+      <div class="g-card g-card-glow-green" style="padding:1.1rem;text-align:center">
+        <div style="font-size:1.6rem;font-weight:900;color:#34d399" class="mono">Step 4</div>
+        <div style="font-weight:800;font-size:0.92rem;color:#ffffff;margin-top:0.3rem">Stakeholder Go-Live</div>
+        <div style="font-size:0.78rem;color:#94a3b8;margin-top:0.2rem">Public Launch &amp; Crew Cards</div>
+      </div>
+    </div>
+
+    <!-- Executive Submission Details -->
+    <div class="a-up d-5" style="display:flex;align-items:center;justify-content:center;gap:2rem;width:100%;max-width:1150px;margin-bottom:1.8rem;padding:0.9rem 1.6rem;background:rgba(15,23,42,0.7);border:1px solid rgba(56,189,248,0.3);border-radius:0.75rem;backdrop-filter:blur(12px)">
+      <div style="text-align:left">
+        <div style="font-size:0.72rem;color:#38bdf8;font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Proposal Lead &amp; Solutions Architect</div>
+        <div style="font-size:1.05rem;font-weight:900;color:#ffffff">Suria Ramadhan <span style="font-size:0.85rem;color:#38bdf8;font-weight:600">(C Edge Sdn Bhd)</span></div>
+      </div>
+      <div style="height:32px;width:1px;background:rgba(255,255,255,0.15)"></div>
+      <div style="text-align:left">
+        <div style="font-size:0.72rem;color:#34d399;font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Prepared &amp; Formulated For</div>
+        <div style="font-size:1.05rem;font-weight:900;color:#34d399">En. Zarwavai Suratman</div>
+      </div>
+      <div style="height:32px;width:1px;background:rgba(255,255,255,0.15)"></div>
+      <div style="text-align:left">
+        <div style="font-size:0.72rem;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:0.08em">Target Regulatory Authority</div>
+        <div style="font-size:1.05rem;font-weight:900;color:#fde68a">CAAM Joint Steering Committee</div>
+        <div style="font-size:0.8rem;color:#94a3b8">Act 771 Digitalisation Mandate</div>
+      </div>
+    </div>
+
+    <div class="a-up d-6" style="display:flex;gap:1.2rem">
+      <button class="btn-nav btn-nav-primary" style="font-size:1.05rem;padding:0.85rem 2.5rem" onclick="goToSlide(0)">
+        ↺ Replay Keynote
+      </button>
+      <button class="btn-nav" style="font-size:1.05rem;padding:0.85rem 2rem" onclick="goToSlide(4)">
+        View System Objectives →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FIXED BOTTOM NAVIGATION BAR
+     ============================================================ -->
+<div class="nav-bar">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">✈️</div>
+    <div class="nav-logo-text">
+      CAAM <span style="color:#38bdf8">2030</span>
+      <span style="font-size:0.74rem;font-weight:600;color:#94a3b8;margin-left:0.8rem;letter-spacing:normal">
+        | <strong>Suria Ramadhan</strong> for <strong style="color:#34d399">En. Zarwavai Suratman (C Edge Sdn Bhd)</strong>
+      </span>
+    </div>
+  </div>
+
+  <div class="nav-dots" id="navDots">
+    <!-- Generated dynamically via JS -->
+  </div>
+
+  <div class="nav-actions">
+    <div class="slide-counter mono" id="slideCounter">01 / 19</div>
+    <button class="btn-nav" id="prevBtn" onclick="prevSlide()">← Prev</button>
+    <button class="btn-nav btn-nav-primary" id="nextBtn" onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT ENGINE (NAVIGATION, CHARTS, PARTICLES)
+     ============================================================ -->
+<script>
+// Slide Navigation Engine
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+
+// Initialize Bottom Dots
+const navDotsContainer = document.getElementById('navDots');
+slides.forEach((_, idx) => {
+  const dot = document.createElement('div');
+  dot.classList.add('nav-dot');
+  if (idx === 0) dot.classList.add('active');
+  dot.onclick = () => goToSlide(idx);
+  navDotsContainer.appendChild(dot);
+});
+
+updateNavigation();
+
+function updateNavigation() {
+  slides.forEach((slide, idx) => {
+    slide.classList.toggle('active', idx === currentSlide);
+  });
+
+  const dots = document.querySelectorAll('.nav-dot');
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentSlide);
+  });
+
+  document.getElementById('slideCounter').textContent = 
+    `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+
+  document.getElementById('prevBtn').disabled = (currentSlide === 0);
+  document.getElementById('nextBtn').textContent = (currentSlide === totalSlides - 1) ? 'Finish ↵' : 'Next →';
+
+    // Trigger Charts when reaching specific slides
+  if (document.getElementById('marketChart') && slides[currentSlide].querySelector('#marketChart')) initMarketChart();
+  if (document.getElementById('capexChart') && slides[currentSlide].querySelector('#capexChart')) initFinancialCharts();
+}
+
+function nextSlide() {
+  if (currentSlide < totalSlides - 1) {
+    currentSlide++;
+    updateNavigation();
+  }
+}
+
+function prevSlide() {
+  if (currentSlide > 0) {
+    currentSlide--;
+    updateNavigation();
+  }
+}
+
+function goToSlide(idx) {
+  if (idx >= 0 && idx < totalSlides) {
+    currentSlide = idx;
+    updateNavigation();
+  }
+}
+
+// Keyboard arrow navigation
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+
+// ============================================================
+// CHART.JS ENGINES
+// ============================================================
+let marketChartInst = null;
+let capexChartInst = null;
+let revenueChartInst = null;
+
+function initMarketChart() {
+  if (marketChartInst) return;
+  const ctx = document.getElementById('marketChart')?.getContext('2d');
+  if (!ctx) return;
+
+  marketChartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['2022', '2023', '2024', '2025 (P)', '2026 (F)', '2028 (F)', '2030 (F)'],
+      datasets: [
+        {
+          label: 'Passengers (Millions)',
+          data: [52.4, 84.6, 102.1, 138.4, 155.0, 185.0, 220.0],
+          backgroundColor: 'rgba(56, 189, 248, 0.75)',
+          borderRadius: 6,
+          yAxisID: 'y'
+        },
+        {
+          label: 'Commercial Drones (x1000)',
+          data: [2.1, 4.8, 8.5, 15.2, 28.0, 65.0, 120.0],
+          type: 'line',
+          borderColor: '#fbbf24',
+          borderWidth: 3,
+          pointBackgroundColor: '#fbbf24',
+          pointRadius: 5,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#cbd5e1', font: { family: 'Plus Jakarta Sans', size: 12, weight: 600 } } }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: '#38bdf8' }, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'Passengers (M)', color: '#38bdf8' } },
+        y1: { position: 'right', ticks: { color: '#fbbf24' }, grid: { drawOnChartArea: false }, title: { display: true, text: 'Drones (k)', color: '#fbbf24' } }
+      }
+    }
+  });
+}
+
+function initFinancialCharts() {
+  if (capexChartInst && revenueChartInst) return;
+
+  // CapEx Doughnut
+  const ctx1 = document.getElementById('capexChart')?.getContext('2d');
+  if (ctx1 && !capexChartInst) {
+    capexChartInst = new Chart(ctx1, {
+      type: 'doughnut',
+      data: {
+        labels: ['Core Software Dev (42%)', 'Sovereign Cloud & HSM (23%)', '3D GIS & UTM Engine (18%)', 'IoT Sensors (11%)', 'Training & Escrow (6%)'],
+        datasets: [{
+          data: [2.55, 1.40, 1.09, 0.67, 0.36],
+          backgroundColor: ['#38bdf8', '#818cf8', '#34d399', '#fbbf24', '#f472b6'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 11, family: 'Plus Jakarta Sans' } } }
+        }
+      }
+    });
+  }
+
+  // Revenue Bar Chart
+  const ctx2 = document.getElementById('revenueChart')?.getContext('2d');
+  if (ctx2 && !revenueChartInst) {
+    revenueChartInst = new Chart(ctx2, {
+      type: 'bar',
+      data: {
+        labels: ['Year 1', 'Year 2', 'Year 3'],
+        datasets: [
+          { label: 'Revenue (RM M)', data: [5.0, 20.0, 29.0], backgroundColor: '#34d399', borderRadius: 6 },
+          { label: 'Investment (RM M)', data: [8.47, 2.24, 2.12], backgroundColor: '#f87171', borderRadius: 6 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#cbd5e1', font: { size: 12, weight: 600 } } }
+        },
+        scales: {
+          x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' }, title: { display: true, text: 'RM Millions', color: '#94a3b8' } }
+        }
+      }
+    });
+  }
+}
+
+// ============================================================
+// CYBERNETIC PARTICLES MESH CANVAS
+// ============================================================
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 0.4;
+    this.vy = (Math.random() - 0.5) * 0.4;
+    this.radius = Math.random() * 1.6 + 0.8;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 45; i++) {
+  particles.push(new Particle());
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
+
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 130) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(99, 102, 241, ${0.18 * (1 - dist / 130)})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+</script>
+</body>
+</html>

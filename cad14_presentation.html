@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAAM E-Application System for Height Limitation & AOL Compliance — Suria Ramadhan for En. Zarwavai Suratman (C Edge Sdn Bhd)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --bg-base: #040811;
+  --bg-card: rgba(13, 22, 41, 0.75);
+  --bg-card-hover: rgba(19, 32, 60, 0.9);
+  --border-cyan: rgba(56, 189, 248, 0.22);
+  --border-glow: rgba(56, 189, 248, 0.45);
+  --cyan: #38bdf8;
+  --cyan-glow: rgba(56, 189, 248, 0.35);
+  --green: #34d399;
+  --amber: #fbbf24;
+  --purple: #c084fc;
+  --red: #f87171;
+  --blue: #60a5fa;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-image: 
+    radial-gradient(circle at 10% 15%, rgba(56, 189, 248, 0.07) 0%, transparent 45%),
+    radial-gradient(circle at 90% 85%, rgba(139, 92, 246, 0.07) 0%, transparent 45%);
+}
+
+#bgCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.mono { font-family: 'JetBrains Mono', monospace; }
+.heading-font { font-family: 'Outfit', sans-serif; }
+
+.grad {
+  background: linear-gradient(135deg, #ffffff 0%, #38bdf8 50%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glassmorphism Card System */
+.g-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-cyan);
+  border-radius: 0.85rem;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.g-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-glow);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.12);
+}
+
+.g-card-glow-cyan { border-color: rgba(56, 189, 248, 0.35); box-shadow: 0 0 15px rgba(56, 189, 248, 0.08); }
+.g-card-glow-green { border-color: rgba(52, 211, 153, 0.35); box-shadow: 0 0 15px rgba(52, 211, 153, 0.08); }
+.g-card-glow-amber { border-color: rgba(251, 191, 36, 0.35); box-shadow: 0 0 15px rgba(251, 191, 36, 0.08); }
+.g-card-glow-purple { border-color: rgba(192, 132, 252, 0.35); box-shadow: 0 0 15px rgba(192, 132, 252, 0.08); }
+.g-card-glow-red { border-color: rgba(248, 113, 113, 0.35); box-shadow: 0 0 15px rgba(248, 113, 113, 0.08); }
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.b-cyan { background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.b-green { background: rgba(52, 211, 153, 0.12); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3); }
+.b-amber { background: rgba(251, 191, 36, 0.12); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+.b-purple { background: rgba(192, 132, 252, 0.12); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); }
+.b-red { background: rgba(248, 113, 113, 0.12); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+.b-blue { background: rgba(96, 165, 250, 0.12); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.3); }
+
+/* Header Attribution Pill */
+.author-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 2rem;
+  font-size: 0.76rem;
+  color: #e2e8f0;
+  backdrop-filter: blur(8px);
+}
+.author-pill strong { color: #ffffff; }
+.author-pill .target-name { color: #34d399; font-weight: 700; }
+
+/* Presentation Container & Slides */
+#presentationContainer {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: calc(100vh - 65px);
+  z-index: 10;
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1.4rem 2.5rem 1rem 2.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  transform: scale(0.985);
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.slide-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.slide-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.85rem;
+}
+
+.slide-tag {
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  margin-bottom: 0.2rem;
+}
+
+.slide-title {
+  font-size: 1.65rem;
+  font-weight: 900;
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.slide-subtitle {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  max-width: 650px;
+  line-height: 1.4;
+  margin-top: 0.15rem;
+}
+
+.slide-body {
+  flex: 1;
+  display: flex;
+  gap: 1.3rem;
+  min-height: 0;
+}
+
+/* Image Presentation Styles */
+.img-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  border: 1px solid var(--border-cyan);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+}
+.img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.img-tag-top {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  background: rgba(3, 7, 18, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 0.3rem 0.65rem;
+  border-radius: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #38bdf8;
+  letter-spacing: 0.04em;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.img-caption-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.8rem 1.1rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(3, 7, 18, 0.95) 30%, rgba(3, 7, 18, 0.98) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.img-caption-bar h5 {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.2rem;
+}
+.img-caption-bar p {
+  font-size: 0.76rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+/* Bottom Navigation Bar */
+.bottom-nav {
+  position: relative;
+  z-index: 20;
+  height: 65px;
+  background: rgba(6, 11, 22, 0.9);
+  border-top: 1px solid rgba(56, 189, 248, 0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  backdrop-filter: blur(12px);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-logo-text {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.nav-dots-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.nav-dot.active {
+  width: 24px;
+  border-radius: 4px;
+  background: #38bdf8;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.slide-counter-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-nav {
+  padding: 0.5rem 1.15rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.84rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+.btn-nav-sec {
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.btn-nav-sec:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+.btn-nav-primary {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
+}
+.btn-nav-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.5);
+}
+.btn-nav:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Custom Table */
+.c-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+}
+.c-table th {
+  background: rgba(56, 189, 248, 0.08);
+  color: #38bdf8;
+  font-weight: 800;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+.c-table td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+}
+.c-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div id="presentationContainer">
+
+  <!-- ============================================================
+       SLIDE 1: HERO COVER SLIDE
+       ============================================================ -->
+  <div class="slide active" id="cad_s0">
+    <div class="slide-box">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="badge b-cyan"><span class="pulse-dot"></span> CAAM CAD 14 &amp; ACT 3 SECTION 24O SPECIALIZED PROPOSAL</div>
+        <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+      </div>
+
+      <div style="display:flex;gap:2rem;align-items:center;margin:auto 0">
+        <div style="flex:1.3">
+          <div style="font-size:0.85rem;font-weight:800;color:#38bdf8;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem">
+            Civil Aviation Authority of Malaysia · E-Application Suite
+          </div>
+          <h1 class="heading-font" style="font-size:2.6rem;font-weight:900;line-height:1.15;margin-bottom:1rem">
+            CAAM E-Application System for <span class="grad">Height Limitation &amp; AOL Compliance</span>
+          </h1>
+          <p style="font-size:1.02rem;color:#cbd5e1;line-height:1.6;margin-bottom:1.6rem;max-width:720px">
+            A comprehensive turnkey digital solution under <strong>Civil Aviation Act 1969 (Act 3) Section 24O</strong> and <strong>CAD 14 Volume I (Standards for Aerodromes)</strong>. Modernising structure height vetting, IoT Aviation Obstacle Light (AOL) monitoring, and executing the National Legalization Program (<strong>Program Pemutihan</strong>).
+          </p>
+
+          <div style="display:flex;gap:1rem;flex-wrap:wrap">
+            <div class="g-card" style="padding:0.75rem 1.1rem;display:flex;align-items:center;gap:0.75rem">
+              <div style="font-size:1.6rem">📡</div>
+              <div>
+                <div style="font-size:0.72rem;color:#94a3b8;font-weight:700">TARGETED STRUCTURES</div>
+                <div style="font-size:1.05rem;font-weight:900;color:#38bdf8">300,000+ Assets</div>
+              </div>
+            </div>
+            <div class="g-card" style="padding:0.75rem 1.1rem;display:flex;align-items:center;gap:0.75rem">
+              <div style="font-size:1.6rem">⚖️</div>
+              <div>
+                <div style="font-size:0.72rem;color:#94a3b8;font-weight:700">STATUTORY MANDATE</div>
+                <div style="font-size:1.05rem;font-weight:900;color:#34d399">Act 3 Section 24O</div>
+              </div>
+            </div>
+            <div class="g-card" style="padding:0.75rem 1.1rem;display:flex;align-items:center;gap:0.75rem">
+              <div style="font-size:1.6rem">💰</div>
+              <div>
+                <div style="font-size:0.72rem;color:#94a3b8;font-weight:700">ANNUAL CAAM REVENUE</div>
+                <div style="font-size:1.05rem;font-weight:900;color:#fbbf24">RM 163.5 Million</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1;min-width:0">
+          <div class="img-wrap" style="height:440px">
+            <img src="assets/eapp_dashboard.jpg" alt="CAAM E-Application Portal">
+            <div class="img-tag-top"><span class="pulse-dot"></span> NEXT.JS 14 CLOUD-NATIVE ENGINE</div>
+            <div class="img-caption-bar">
+              <h5>National Height Limitation &amp; AOL Control Center</h5>
+              <p>3D GIS interactive spatial mapping, real-time AOL warning light telemetry, and automated certificate generation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.08);padding-top:0.75rem;font-size:0.8rem;color:#94a3b8">
+        <div>Prepared by: <strong style="color:#ffffff">Suria Ramadhan</strong></div>
+        <div>Target Stakeholder: <strong style="color:#34d399">En. Zarwavai Suratman (C Edge Sdn Bhd)</strong></div>
+        <div>Statutory Target: <strong style="color:#38bdf8">Civil Aviation Authority of Malaysia (CAAM)</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 2: EXECUTIVE SUMMARY & PROBLEM STATEMENT (PDF Pages 3-7)
+       ============================================================ -->
+  <div class="slide" id="cad_s1">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">Executive Summary &amp; Ground Reality</div>
+          <h2 class="slide-title">The Current Challenge — <span class="grad">Operational &amp; Safety Vacuum</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Thousands of unrecorded structures operate across Malaysia without mandatory warning lights.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-red" style="padding:1rem;flex:1">
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+              <span style="font-size:1.4rem">🚫</span>
+              <h4 style="font-size:1rem;font-weight:800;color:#fca5a5">1. Unregistered Structures (No CAAM Record)</h4>
+            </div>
+            <p style="font-size:0.82rem;color:#cbd5e1;line-height:1.5">
+              Thousands of telco towers, construction cranes, and high-rise developments are built without formal CAAM height limitation approval or GIS coordinate logging.
+            </p>
+          </div>
+
+          <div class="g-card g-card-glow-amber" style="padding:1rem;flex:1">
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+              <span style="font-size:1.4rem">💡</span>
+              <h4 style="font-size:1rem;font-weight:800;color:#fde68a">2. Missing or Broken Warning Lights (AOL)</h4>
+            </div>
+            <p style="font-size:0.82rem;color:#cbd5e1;line-height:1.5">
+              Many existing structures lack Aviation Obstruction Lights (AOL), or lights have burned out without CAAM having any live operational visibility, creating flight collision hazards.
+            </p>
+          </div>
+
+          <div class="g-card g-card-glow-purple" style="padding:1rem;flex:1">
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.4rem">
+              <span style="font-size:1.4rem">📑</span>
+              <h4 style="font-size:1rem;font-weight:800;color:#c084fc">3. Outdated Manual Hardcopy Audits</h4>
+            </div>
+            <p style="font-size:0.82rem;color:#cbd5e1;line-height:1.5">
+              CAAM officers audit structures via physical paper dossiers and manual counter visits. Processing a single height limitation application takes <strong>3 to 6 weeks</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-green" style="padding:1.2rem;flex:1;display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.7rem">
+                <span class="badge b-green">The Solution</span>
+                <span style="font-size:0.8rem;color:#34d399;font-weight:800">E-Application Portal</span>
+              </div>
+              <h3 style="font-size:1.25rem;font-weight:900;color:#ffffff;margin-bottom:0.6rem">
+                A Unified Digital Portal for Height Limitation &amp; AOL Vetting
+              </h3>
+              <p style="font-size:0.84rem;color:#cbd5e1;line-height:1.6;margin-bottom:0.8rem">
+                Replacing paper forms with a high-performance web platform featuring <strong>online submissions, secure document uploads, real-time application tracking, automated SMS/email alerts, and automated correspondence letter generation</strong>.
+              </p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;font-size:0.78rem">
+                <div style="background:rgba(255,255,255,0.04);padding:0.5rem;border-radius:0.4rem;border-left:2px solid #38bdf8">
+                  <strong>Zero Paper Backlog:</strong> Instant submission &amp; tracking
+                </div>
+                <div style="background:rgba(255,255,255,0.04);padding:0.5rem;border-radius:0.4rem;border-left:2px solid #34d399">
+                  <strong>IoT AOL Heartbeat:</strong> 24/7 live telemetry tracking
+                </div>
+                <div style="background:rgba(255,255,255,0.04);padding:0.5rem;border-radius:0.4rem;border-left:2px solid #fbbf24">
+                  <strong>Program Pemutihan:</strong> Structure legalization drive
+                </div>
+                <div style="background:rgba(255,255,255,0.04);padding:0.5rem;border-radius:0.4rem;border-left:2px solid #c084fc">
+                  <strong>Act 3 S.24O Compliance:</strong> Automated statutory notices
+                </div>
+              </div>
+            </div>
+            <div style="margin-top:0.8rem;padding:0.6rem 0.9rem;background:rgba(52,211,153,0.1);border-radius:0.5rem;border:1px solid rgba(52,211,153,0.3);font-size:0.8rem;color:#6ee7b7;font-weight:700">
+              ⚡ Transforming 3-6 week manual paper vetting into &lt;2-second automated 3D GIS spatial assessments.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 3: THE 9 REGULATED STRUCTURE CATEGORIES (PDF Page 10)
+       ============================================================ -->
+  <div class="slide" id="cad_s2">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">Scope of Regulation · CAD 14 Vol I</div>
+          <h2 class="slide-title">9 Regulated Tall Structure Categories — <span class="grad">Full National Scope</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Governing all vertical obstacles and Aviation Obstacle Light (AOL) compliance nationwide.</div>
+        </div>
+      </div>
+
+      <div class="slide-body" style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.9rem">
+        <div class="g-card g-card-glow-cyan" style="padding:1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <span style="font-size:1.6rem">🗼</span>
+              <span class="badge b-cyan">60,000 Sites</span>
+            </div>
+            <h4 style="font-size:0.95rem;font-weight:800;color:#ffffff;margin-bottom:0.3rem">01. Telco / 5G Towers</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45;margin-bottom:0.4rem">Mobile Network Operator (MNO) lattice towers, monopoles, and rooftop antenna masts.</p>
+            <div style="font-size:0.72rem;color:#94a3b8;line-height:1.4">
+              • Height Range: 30m – 120m AGL<br>
+              • Standard: Medium-Intensity Type A/B<br>
+              • Annual Fee: RM 500 / tower
+            </div>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#38bdf8;margin-top:0.4rem">Revenue: RM 30.0M / yr</div>
+        </div>
+
+        <div class="g-card g-card-glow-blue" style="padding:1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <span style="font-size:1.6rem">🏢</span>
+              <span class="badge b-blue">21,000 Sites</span>
+            </div>
+            <h4 style="font-size:0.95rem;font-weight:800;color:#ffffff;margin-bottom:0.3rem">02. High-Rise Buildings</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45;margin-bottom:0.4rem">Commercial skyscrapers, residential high-rises, and hotel towers penetrating aerodrome OLS.</p>
+            <div style="font-size:0.72rem;color:#94a3b8;line-height:1.4">
+              • Height Range: 45m – 450m+ AGL<br>
+              • Standard: Flashing Red Beacons<br>
+              • Annual Fee: RM 500 / building
+            </div>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#60a5fa;margin-top:0.4rem">Revenue: RM 10.5M / yr</div>
+        </div>
+
+        <div class="g-card g-card-glow-green" style="padding:1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <span style="font-size:1.6rem">⚡</span>
+              <span class="badge b-green">210,000 Pylons</span>
+            </div>
+            <h4 style="font-size:0.95rem;font-weight:800;color:#ffffff;margin-bottom:0.3rem">03. Transmission Towers</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45;margin-bottom:0.4rem">High-voltage overhead power cables, transmission pylons, and river crossing towers.</p>
+            <div style="font-size:0.72rem;color:#94a3b8;line-height:1.4">
+              • Height Range: 25m – 90m AGL<br>
+              • Standard: Catenary White Strobes<br>
+              • Annual Fee: RM 100 / pylon
+            </div>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#34d399;margin-top:0.4rem">Revenue: RM 21.0M / yr</div>
+        </div>
+
+        <div class="g-card g-card-glow-amber" style="padding:1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <span style="font-size:1.6rem">🏗️</span>
+              <span class="badge b-amber">12,000 Active</span>
+            </div>
+            <h4 style="font-size:0.95rem;font-weight:800;color:#ffffff;margin-bottom:0.3rem">04. Construction Cranes</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45;margin-bottom:0.4rem">Temporary tower cranes, mobile luffing cranes, and construction hoists operating near flight paths.</p>
+            <div style="font-size:0.72rem;color:#94a3b8;line-height:1.4">
+              • Height Range: 30m – 200m AGL<br>
+              • Standard: Jib Tip Medium Red<br>
+              • Annual Fee: RM 500 / crane
+            </div>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#fbbf24;margin-top:0.4rem">Revenue: RM 6.0M / yr</div>
+        </div>
+
+        <div class="g-card g-card-glow-purple" style="padding:1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <span style="font-size:1.6rem">🔴</span>
+              <span class="badge b-purple">300,000 Units</span>
+            </div>
+            <h4 style="font-size:0.95rem;font-weight:800;color:#ffffff;margin-bottom:0.3rem">05. Aviation Warning Lights</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45;margin-bottom:0.4rem">Individual obstacle light units, solar-powered beacon controllers, and battery backups.</p>
+            <div style="font-size:0.72rem;color:#94a3b8;line-height:1.4">
+              • Sensor: IoT MQTT Telemetry<br>
+              • Standard: Low/Med/High Intensity<br>
+              • Annual Fee: RM 300 / unit
+            </div>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#c084fc;margin-top:0.4rem">Revenue: RM 90.0M / yr</div>
+        </div>
+
+        <div class="g-card" style="padding:1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <span style="font-size:1.6rem">🏭</span>
+              <span class="badge b-cyan">Special Assets</span>
+            </div>
+            <h4 style="font-size:0.95rem;font-weight:800;color:#ffffff;margin-bottom:0.3rem">06. Chimneys, Radars &amp; Heliports</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45;margin-bottom:0.4rem">Industrial smokestacks, wind measurement masts, aeronautical radars, and hospital helidecks.</p>
+            <div style="font-size:0.72rem;color:#94a3b8;line-height:1.4">
+              • Height Range: Custom OLS envelope<br>
+              • Standard: CAD 14 Ch 6 &amp; 9<br>
+              • Annual Fee: RM 500 / structure
+            </div>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#38bdf8;margin-top:0.4rem">Revenue: RM 6.0M / yr</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 4: CAD 14 CHAPTER 4 — 3D OLS SPATIAL ENGINE
+       ============================================================ -->
+  <div class="slide" id="cad_s3">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">CAD 14 Volume I · Chapter 4</div>
+          <h2 class="slide-title">3D OLS Spatial Engine — <span class="grad">Automated Ray-Tracing</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Instant 3D spatial intersection checking against all 8 statutory Obstacle Limitation Surfaces.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1.1">
+          <div class="img-wrap" style="height:100%">
+            <img src="assets/ols3d.jpg" alt="CAD 14 3D OLS Model">
+            <div class="img-tag-top"><span class="pulse-dot"></span> POSTGIS 3D · SUB-2-SECOND SPATIAL RAY-TRACING</div>
+            <div class="img-caption-bar">
+              <h5>Automated 3D Obstacle Limitation Surface (OLS) Vetting</h5>
+              <p>Computes exact penetration depth down to the centimeter across all runway approaches, missed approach funnels, and horizontal surfaces.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:0.65rem">
+          <div class="g-card" style="padding:0.85rem 1.1rem">
+            <h4 style="font-size:0.92rem;font-weight:800;color:#38bdf8;margin-bottom:0.4rem">📐 The 8 Statutory CAD 14 Chapter 4 Surfaces Calculated:</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.45rem;font-size:0.76rem">
+              <div style="background:rgba(255,255,255,0.03);padding:0.45rem;border-radius:0.4rem;border-left:2px solid #38bdf8">
+                <strong>1. Take-Off Climb Surface:</strong><br>2.0% - 5.0% slope up to 15km
+              </div>
+              <div style="background:rgba(255,255,255,0.03);padding:0.45rem;border-radius:0.4rem;border-left:2px solid #34d399">
+                <strong>2. Approach Surface:</strong><br>Precision Cat I/II/III corridors
+              </div>
+              <div style="background:rgba(255,255,255,0.03);padding:0.45rem;border-radius:0.4rem;border-left:2px solid #c084fc">
+                <strong>3. Transitional Surface:</strong><br>14.3% / 20% side slope from strip
+              </div>
+              <div style="background:rgba(255,255,255,0.03);padding:0.45rem;border-radius:0.4rem;border-left:2px solid #fbbf24">
+                <strong>4. Inner Transitional:</strong><br>33.3% slope for Obstacle-Free Zone
+              </div>
+              <div style="background:rgba(255,255,255,0.03);padding:0.45rem;border-radius:0.4rem;border-left:2px solid #f87171">
+                <strong>5. Inner Horizontal Surface:</strong><br>45m elevation plane (4km radius)
+              </div>
+              <div style="background:rgba(255,255,255,0.03);padding:0.45rem;border-radius:0.4rem;border-left:2px solid #60a5fa">
+                <strong>6. Conical Surface:</strong><br>5.0% slope extending to 100m
+              </div>
+              <div style="background:rgba(255,255,255,0.03);padding:0.45rem;border-radius:0.4rem;border-left:2px solid #f472b6">
+                <strong>7. Balked Landing Surface:</strong><br>Missed approach climb protection
+              </div>
+              <div style="background:rgba(255,255,255,0.03);padding:0.45rem;border-radius:0.4rem;border-left:2px solid #a78bfa">
+                <strong>8. Outer Horizontal Surface:</strong><br>15km regional aerodrome buffer
+              </div>
+            </div>
+          </div>
+
+          <div class="g-card g-card-glow-green" style="padding:0.85rem 1.1rem">
+            <h4 style="font-size:0.88rem;font-weight:800;color:#34d399;margin-bottom:0.3rem">⚡ Instant Height Limitation Vetting Workflow</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45">
+              Applicant inputs Latitude, Longitude, Ground Level (GL), and Proposed Height. The system combines digital elevation models (SRTM/LiDAR) with 3D CAD 14 surfaces to deliver an immediate <strong>Approved Height Clearance Certificate</strong> or <strong>Prescribed Mitigation Notice</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 5: CAD 14 CHAPTER 6 — IOT AOL REAL-TIME TELEMETRY
+       ============================================================ -->
+  <div class="slide" id="cad_s4">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">CAD 14 Volume I · Chapter 6 &amp; Act 3 Section 24O</div>
+          <h2 class="slide-title">Real-Time IoT AOL Telemetry — <span class="grad">24/7 Warning Light Surveillance</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Live sensor heartbeat tracking 300,000+ Aviation Obstacle Light fixtures nationwide.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1.1">
+          <div class="img-wrap" style="height:100%">
+            <img src="assets/aol_iot_telemetry.jpg" alt="AOL IoT Telemetry">
+            <div class="img-tag-top"><span class="pulse-dot"></span> LIVE SENSOR HEARTBEAT · NB-IOT &amp; GSM PROTOCOL</div>
+            <div class="img-caption-bar">
+              <h5>IoT Smart Sensor Integration on Tower Beacons</h5>
+              <p>Continuous monitoring of light status (Active/Inactive), Lux output, flashing cadence, solar battery voltage, and mains power health.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-cyan" style="padding:1rem">
+            <h4 style="font-size:0.95rem;font-weight:800;color:#38bdf8;margin-bottom:0.4rem">🔴 CAD 14 AOL Technical Standards Ingested:</h4>
+            <div style="display:flex;flex-direction:column;gap:0.45rem;font-size:0.78rem;color:#cbd5e1">
+              <div style="display:flex;justify-content:space-between;padding:0.35rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span><strong>Low-Intensity Type A / B:</strong> (10 cd / 32 cd Fixed Red)</span>
+                <span class="mono" style="color:#34d399">Structures &lt; 45m</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.35rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span><strong>Medium-Intensity Type A:</strong> (20,000 cd Flashing White)</span>
+                <span class="mono" style="color:#38bdf8">Structures 45m – 150m</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.35rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span><strong>Medium-Intensity Type B / C:</strong> (2,000 cd Flashing Red)</span>
+                <span class="mono" style="color:#fbbf24">Night Obstacle Beacons</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.35rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span><strong>High-Intensity Type A / B:</strong> (200,000 cd White Strobe)</span>
+                <span class="mono" style="color:#f87171">Structures &gt; 150m &amp; Pylons</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="g-card g-card-glow-red" style="padding:1rem">
+            <h4 style="font-size:0.95rem;font-weight:800;color:#fca5a5;margin-bottom:0.35rem">⚖️ Automated Section 24O(2) Statutory Enforcement Engine</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.5">
+              When an AOL failure occurs in an active flight approach path:
+              <br>1. System triggers an automated <strong>ATC NOTAM Warning</strong> within 60 seconds.
+              <br>2. Automated SMS/Email warning dispatched to tower owner (Maxis/edotco/TNB).
+              <br>3. If unrectified within statutory deadline, system automatically generates a <strong>Section 24O(2) Compound Notice</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 6: E-APPLICATION SYSTEM ARCHITECTURE & COMPONENTS (PDF Page 14-18)
+       ============================================================ -->
+  <div class="slide" id="cad_s5">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">System Specifications · SOLUTIONS_FOR_CAAM.pdf Page 14-18</div>
+          <h2 class="slide-title">E-Application Architecture — <span class="grad">Full-Stack Technical Blueprint</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Modern, secure web architecture built with Next.js 14, React, TailwindCSS, and MySQL/PostGIS.</div>
+        </div>
+      </div>
+
+      <div class="slide-body" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:1rem">
+        <div class="g-card g-card-glow-cyan" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:1.8rem;margin-bottom:0.5rem">💻</div>
+            <span class="badge b-cyan" style="margin-bottom:0.5rem">Frontend Stack</span>
+            <h4 style="font-size:1rem;font-weight:800;color:#ffffff;margin-bottom:0.4rem">Next.js &amp; React</h4>
+            <ul style="list-style:none;font-size:0.78rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.3rem">
+              <li>✓ Next.js 14 App Router</li>
+              <li>✓ React 18 Responsive UI</li>
+              <li>✓ TailwindCSS &amp; ShadCN UI</li>
+              <li>✓ Interactive 3D GIS Maps</li>
+              <li>✓ Mobile PWA Support</li>
+            </ul>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#38bdf8">UI/UX: Art &amp; Asset Engine</div>
+        </div>
+
+        <div class="g-card g-card-glow-blue" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:1.8rem;margin-bottom:0.5rem">⚙️</div>
+            <span class="badge b-blue" style="margin-bottom:0.5rem">Backend Engine</span>
+            <h4 style="font-size:1rem;font-weight:800;color:#ffffff;margin-bottom:0.4rem">Core Services</h4>
+            <ul style="list-style:none;font-size:0.78rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.3rem">
+              <li>✓ Multi-Tenant Auth (RBAC)</li>
+              <li>✓ Master Data Management</li>
+              <li>✓ Dynamic Form Engine</li>
+              <li>✓ Official Letter Generator</li>
+              <li>✓ Automated Notification Queue</li>
+            </ul>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#60a5fa">API: REST &amp; WebSocket</div>
+        </div>
+
+        <div class="g-card g-card-glow-green" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:1.8rem;margin-bottom:0.5rem">🗄️</div>
+            <span class="badge b-green" style="margin-bottom:0.5rem">Database Layer</span>
+            <h4 style="font-size:1rem;font-weight:800;color:#ffffff;margin-bottom:0.4rem">MySQL &amp; PostGIS</h4>
+            <ul style="list-style:none;font-size:0.78rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.3rem">
+              <li>✓ Master Structure Registry</li>
+              <li>✓ 3D WGS84 Spatial Data</li>
+              <li>✓ Historical Heartbeat Influx</li>
+              <li>✓ ACID Financial Ledger</li>
+              <li>✓ Encrypted Document Vault</li>
+            </ul>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#34d399">Hosting: MyGovCloud Sovereign</div>
+        </div>
+
+        <div class="g-card g-card-glow-purple" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:1.8rem;margin-bottom:0.5rem">🛡️</div>
+            <span class="badge b-purple" style="margin-bottom:0.5rem">Security &amp; Compliance</span>
+            <h4 style="font-size:1rem;font-weight:800;color:#ffffff;margin-bottom:0.4rem">Enterprise Security</h4>
+            <ul style="list-style:none;font-size:0.78rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.3rem">
+              <li>✓ PDPA Act 709 Compliant</li>
+              <li>✓ AES-256 GCM Encryption</li>
+              <li>✓ Act 560 Digital Signatures</li>
+              <li>✓ Role-Based Permissions</li>
+              <li>✓ Comprehensive Audit Logs</li>
+            </ul>
+          </div>
+          <div class="mono" style="font-size:0.7rem;color:#c084fc">Security: ISO 27001 Aligned</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 7: SCREEN ARCHITECTURE & USER FLOW (PDF Page 19-24)
+       ============================================================ -->
+  <div class="slide" id="cad_s6">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">User Experience · SOLUTIONS_FOR_CAAM.pdf Page 19-24</div>
+          <h2 class="slide-title">E-Application User Journey — <span class="grad">End-to-End Workflow</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Streamlined 5-step operational interface for applicants and CAAM regulatory officers.</div>
+        </div>
+      </div>
+
+      <div class="slide-body" style="display:flex;gap:1.2rem">
+        <div style="flex:1;display:flex;flex-direction:column;gap:0.55rem">
+          <div class="g-card" style="padding:0.75rem 1rem">
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="badge b-cyan" style="font-size:0.7rem">1</span>
+              <div>
+                <strong style="font-size:0.85rem;color:#ffffff">Login &amp; Auth (Page 19)</strong>
+                <p style="font-size:0.74rem;color:#cbd5e1">Single Sign-On (SSO) with MyKad eKYC for structure owners and CAAM inspectors.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="g-card" style="padding:0.75rem 1rem">
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="badge b-green" style="font-size:0.7rem">2</span>
+              <div>
+                <strong style="font-size:0.85rem;color:#ffffff">Home &amp; Master List (Page 20–21)</strong>
+                <p style="font-size:0.74rem;color:#cbd5e1">National registry table with real-time filters, document count per applicant, and site status meters.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="g-card" style="padding:0.75rem 1rem">
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="badge b-amber" style="font-size:0.7rem">3</span>
+              <div>
+                <strong style="font-size:0.85rem;color:#ffffff">Create Form Application (Page 22)</strong>
+                <p style="font-size:0.74rem;color:#cbd5e1">New / Renewal application selecting structure type, coordinates, proposal plans, and AOL specs.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="g-card" style="padding:0.75rem 1rem">
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="badge b-purple" style="font-size:0.7rem">4</span>
+              <div>
+                <strong style="font-size:0.85rem;color:#ffffff">Edit &amp; Upload Document (Page 23)</strong>
+                <p style="font-size:0.74rem;color:#cbd5e1">Attaches PE endorsement drawings, surveyor certs, photos, and live IoT sensor connection tokens.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="g-card" style="padding:0.75rem 1rem">
+            <div style="display:flex;align-items:center;gap:0.6rem">
+              <span class="badge b-blue" style="font-size:0.7rem">5</span>
+              <div>
+                <strong style="font-size:0.85rem;color:#ffffff">View Detail &amp; Approval Letter (Page 24)</strong>
+                <p style="font-size:0.74rem;color:#cbd5e1">Audit log review, automated CAAM official correspondence letter generation, and QR verification seal.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1.3">
+          <div class="img-wrap" style="height:100%">
+            <img src="assets/dashboard.jpg" alt="Master List Screen">
+            <div class="img-tag-top"><span class="pulse-dot"></span> MASTER LIST &amp; APPLICATION STATUS DASHBOARD</div>
+            <div class="img-caption-bar">
+              <h5>Unified Multi-Tenant Administrative Console</h5>
+              <p>Real-time analytics on total incoming/outgoing applications, site compliance rates, and automated correspondence tracking.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 8: NATIONAL STRUCTURE LEGALIZATION (PROGRAM PEMUTIHAN)
+       ============================================================ -->
+  <div class="slide" id="cad_s7">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">National Legalization Drive · Act 3 S.24O</div>
+          <h2 class="slide-title">Program Pemutihan — <span class="grad">National Structure Legalization</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">A statutory amnesty initiative bringing thousands of unrecorded brownfield structures into legal compliance.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1.1">
+          <div class="img-wrap" style="height:100%">
+            <img src="assets/ops_transformation.jpg" alt="Program Pemutihan">
+            <div class="img-tag-top"><span class="pulse-dot"></span> GREENFIELD &amp; BROWNFIELD LEGALIZATION PIPELINE</div>
+            <div class="img-caption-bar">
+              <h5>Transforming Unrecorded Liabilities into Compliant Assets</h5>
+              <p>Phased national campaign empowering telcos, power companies, and developers to regularize assets with CAAM.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-amber" style="padding:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <h4 style="font-size:0.95rem;font-weight:800;color:#fbbf24">🏢 Greenfield (New) vs Brownfield (Existing)</h4>
+              <span class="badge b-amber">Two-Track Onboarding</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;font-size:0.78rem">
+              <div style="background:rgba(255,255,255,0.03);padding:0.6rem;border-radius:0.4rem;border-left:2px solid #34d399">
+                <strong style="color:#ffffff">Greenfield Application:</strong><br>
+                Mandatory height clearance approval prior to local council (PBT) development order issuance.
+              </div>
+              <div style="background:rgba(255,255,255,0.03);padding:0.6rem;border-radius:0.4rem;border-left:2px solid #fbbf24">
+                <strong style="color:#ffffff">Brownfield Legalization:</strong><br>
+                Amnesty registration of existing unrecorded towers with retrofitted certified AOL lights.
+              </div>
+            </div>
+          </div>
+
+          <div class="g-card g-card-glow-cyan" style="padding:1rem">
+            <h4 style="font-size:0.95rem;font-weight:800;color:#38bdf8;margin-bottom:0.35rem">📦 Bulk Enterprise Ingestion Tools</h4>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.5">
+              Major infrastructure providers (edotco, EdgePoint, DNB, Tenaga Nasional Berhad) can batch-upload thousands of tower coordinates via GeoJSON/KML or REST API, reducing onboarding time from months to hours.
+            </p>
+          </div>
+
+          <div style="padding:0.7rem 1rem;background:rgba(52,211,153,0.1);border-radius:0.5rem;border:1px solid rgba(52,211,153,0.3);font-size:0.8rem;color:#6ee7b7;font-weight:700">
+            ✅ Delivers 100% statutory legal compliance under Section 24O while creating an immediate multi-million ringgit revenue inflow for CAAM.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 9: COMMERCIAL MODEL (80:20 PROFIT SHARING) (PDF Page 26-27)
+       ============================================================ -->
+  <div class="slide" id="cad_s8">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">Commercial &amp; Financial Model · SOLUTIONS_FOR_CAAM.pdf Page 26-27</div>
+          <h2 class="slide-title">Commercial Model — <span class="grad">80:20 Public-Private Partnership</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Self-funding PPP framework delivering guaranteed recurring revenue to CAAM with zero treasury risk.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <!-- Left: 80:20 Model Breakdown -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-green" style="padding:1.1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem">
+              <span class="badge b-green">Revenue Sharing Ratio</span>
+              <span style="font-size:0.8rem;color:#34d399;font-weight:800">PPP Framework</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:0.8rem">
+              <div style="text-align:center;padding:0.75rem 1.2rem;background:rgba(52,211,153,0.15);border-radius:0.6rem;border:1px solid #34d399">
+                <div style="font-size:1.8rem;font-weight:900;color:#34d399">80%</div>
+                <div style="font-size:0.72rem;font-weight:700;color:#ffffff">CAAM SHARE</div>
+              </div>
+              <div style="font-size:1.5rem;color:#94a3b8">:</div>
+              <div style="text-align:center;padding:0.75rem 1.2rem;background:rgba(56,189,248,0.15);border-radius:0.6rem;border:1px solid #38bdf8">
+                <div style="font-size:1.8rem;font-weight:900;color:#38bdf8">20%</div>
+                <div style="font-size:0.72rem;font-weight:700;color:#ffffff">PMT / C EDGE</div>
+              </div>
+            </div>
+            <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.45">
+              • <strong>Revenue Streams:</strong> Legalization Fees (Pemutihan) + Annual Licensing Renewals.<br>
+              • <strong>Scope Included:</strong> Turnkey E-Application Portal, PMT technical operations, 24/7 server hosting, and maintenance.
+            </p>
+          </div>
+
+          <div class="g-card" style="padding:1rem;flex:1">
+            <h4 style="font-size:0.9rem;font-weight:800;color:#38bdf8;margin-bottom:0.4rem">Initial Year 1 Financials (PDF Page 27):</h4>
+            <div style="display:flex;flex-direction:column;gap:0.35rem;font-size:0.78rem">
+              <div style="display:flex;justify-content:space-between;padding:0.3rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span>Monthly Gross Revenue:</span>
+                <strong style="color:#34d399">RM 1,900,000 / month</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.3rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span>Total 12-Month Gross Revenue:</span>
+                <strong style="color:#34d399">RM 22,800,000</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.3rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span>Total 12-Month Operating Costs:</span>
+                <strong style="color:#f87171">RM 6,372,000</strong>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.35rem 0.5rem;background:rgba(52,211,153,0.12);border-radius:0.3rem;border:1px solid rgba(52,211,153,0.3)">
+                <span>Net 12-Month Profit:</span>
+                <strong style="color:#34d399;font-size:0.85rem">RM 16,428,000</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Year 1 Breakdown Table -->
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card" style="padding:1rem;flex:1">
+            <h4 style="font-size:0.92rem;font-weight:800;color:#ffffff;margin-bottom:0.6rem">Year 1 Cashflow Details (From SOLUTIONS_FOR_CAAM.pdf)</h4>
+            <table class="c-table">
+              <thead>
+                <tr>
+                  <th>Revenue Component</th>
+                  <th>Volume / Sites</th>
+                  <th>Monthly (RM)</th>
+                  <th>Annual (RM)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Legalization (Pemutihan)</strong></td>
+                  <td>2,000 sites</td>
+                  <td style="color:#34d399">RM 400,000</td>
+                  <td style="color:#34d399">RM 4,800,000</td>
+                </tr>
+                <tr>
+                  <td><strong>Licensing &amp; Renewals</strong></td>
+                  <td>5,000 sites</td>
+                  <td style="color:#34d399">RM 1,500,000</td>
+                  <td style="color:#34d399">RM 18,000,000</td>
+                </tr>
+                <tr style="background:rgba(56,189,248,0.08)">
+                  <td><strong>Total Gross Revenue</strong></td>
+                  <td><strong>7,000 sites</strong></td>
+                  <td style="color:#38bdf8;font-weight:800">RM 1,900,000</td>
+                  <td style="color:#38bdf8;font-weight:800">RM 22,800,000</td>
+                </tr>
+                <tr>
+                  <td>E-Application System Fee</td>
+                  <td>Lump Sum</td>
+                  <td style="color:#f87171">RM 200,000</td>
+                  <td style="color:#f87171">RM 2,400,000</td>
+                </tr>
+                <tr>
+                  <td>Project Management Team (PMT)</td>
+                  <td>Lump Sum</td>
+                  <td style="color:#f87171">RM 250,000</td>
+                  <td style="color:#f87171">RM 3,000,000</td>
+                </tr>
+                <tr>
+                  <td>Miscellaneous &amp; Support</td>
+                  <td>Lump Sum</td>
+                  <td style="color:#f87171">RM 81,000</td>
+                  <td style="color:#f87171">RM 972,000</td>
+                </tr>
+                <tr style="background:rgba(52,211,153,0.12)">
+                  <td><strong>Net Profit Surplus</strong></td>
+                  <td>—</td>
+                  <td style="color:#34d399;font-weight:900">RM 1,369,000</td>
+                  <td style="color:#34d399;font-weight:900">RM 16,428,000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 10: 10-YEAR CASHFLOW FORECAST (PDF Page 28-29)
+       ============================================================ -->
+  <div class="slide" id="cad_s9">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">Long-Term Projections · SOLUTIONS_FOR_CAAM.pdf Page 28-29</div>
+          <h2 class="slide-title">10-Year Cashflow Forecast — <span class="grad">RM 163.5M Annual Scale</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Mature national scale delivering over RM 156.9 Million in annual net surplus to CAAM.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card" style="padding:0.9rem;flex:1">
+            <h4 style="font-size:0.9rem;font-weight:800;color:#38bdf8;margin-bottom:0.4rem">Mature Annual Revenue Breakdown (Years 6 to 10):</h4>
+            <table class="c-table">
+              <thead>
+                <tr>
+                  <th>Structure Asset Category</th>
+                  <th>National Asset Volume</th>
+                  <th>Fee per Unit</th>
+                  <th>Annual Revenue (RM)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Telco / 5G Towers</strong></td>
+                  <td>60,000 towers</td>
+                  <td>RM 500 / yr</td>
+                  <td style="color:#34d399;font-weight:700">RM 30,000,000</td>
+                </tr>
+                <tr>
+                  <td><strong>High-Rise Buildings</strong></td>
+                  <td>21,000 buildings</td>
+                  <td>RM 500 / yr</td>
+                  <td style="color:#34d399;font-weight:700">RM 10,500,000</td>
+                </tr>
+                <tr>
+                  <td><strong>TNB Transmission Pylons</strong></td>
+                  <td>210,000 towers</td>
+                  <td>RM 100 / yr</td>
+                  <td style="color:#34d399;font-weight:700">RM 21,000,000</td>
+                </tr>
+                <tr>
+                  <td><strong>Construction Cranes</strong></td>
+                  <td>12,000 cranes</td>
+                  <td>RM 500 / yr</td>
+                  <td style="color:#34d399;font-weight:700">RM 6,000,000</td>
+                </tr>
+                <tr>
+                  <td><strong>Aviation Warning Lights</strong></td>
+                  <td>300,000 lights</td>
+                  <td>RM 300 / yr</td>
+                  <td style="color:#34d399;font-weight:700">RM 90,000,000</td>
+                </tr>
+                <tr>
+                  <td><strong>Generic Tall Structures</strong></td>
+                  <td>12,000 sites</td>
+                  <td>RM 500 / yr</td>
+                  <td style="color:#34d399;font-weight:700">RM 6,000,000</td>
+                </tr>
+                <tr style="background:rgba(52,211,153,0.15)">
+                  <td><strong>Total Annual Revenue Received</strong></td>
+                  <td><strong>615,000 Total Assets</strong></td>
+                  <td>—</td>
+                  <td style="color:#34d399;font-weight:900;font-size:0.9rem">RM 163,500,000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-green" style="padding:1.1rem">
+            <h4 style="font-size:0.95rem;font-weight:800;color:#34d399;margin-bottom:0.5rem">Annual Operating Expenses vs Net Surplus:</h4>
+            <div style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.8rem">
+              <div style="display:flex;justify-content:space-between;padding:0.35rem 0.6rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span>E-Application Service Fee:</span>
+                <span style="color:#f87171">RM 2,400,000 / yr</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.35rem 0.6rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span>PMT Operational Support:</span>
+                <span style="color:#f87171">RM 3,000,000 / yr</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.35rem 0.6rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
+                <span>Hosting, Maintenance &amp; Support:</span>
+                <span style="color:#f87171">RM 1,155,000 / yr</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:0.4rem 0.6rem;background:rgba(239,68,68,0.1);border-radius:0.3rem;border:1px solid rgba(239,68,68,0.3)">
+                <span>Total Annual Expenses:</span>
+                <strong style="color:#f87171">RM 6,555,000 / yr</strong>
+              </div>
+            </div>
+
+            <div style="margin-top:0.9rem;padding:0.9rem;background:linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.1));border-radius:0.6rem;border:1px solid #34d399;text-align:center">
+              <div style="font-size:0.75rem;font-weight:800;color:#6ee7b7;text-transform:uppercase">NET ANNUAL ENDING BANK BALANCE TO CAAM</div>
+              <div style="font-size:1.8rem;font-weight:900;color:#ffffff;margin:0.2rem 0">RM 156,945,000</div>
+              <div style="font-size:0.72rem;color:#cbd5e1">Every Year (Years 6 to 10)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 11: TECHNICAL DEVELOPMENT TIMELINE (PDF Page 16)
+       ============================================================ -->
+  <div class="slide" id="cad_s10">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">Implementation Roadmap · SOLUTIONS_FOR_CAAM.pdf Page 16</div>
+          <h2 class="slide-title">Development Timeline — <span class="grad">4-Month Delivery Plan</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Structured, agile engineering methodology delivering production go-live in 16 weeks.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1;display:grid;grid-template-columns:repeat(4, 1fr);gap:1rem">
+          <div class="g-card g-card-glow-cyan" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                <span class="badge b-cyan">MONTH 1</span>
+                <span style="font-size:0.74rem;color:#38bdf8;font-weight:700">Weeks 1–4</span>
+              </div>
+              <h4 style="font-size:1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Requirement &amp; SOW</h4>
+              <ul style="list-style:none;font-size:0.78rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+                <li>• Requirement Gathering with CAAM AGA division</li>
+                <li>• Finalizing Scope of Work (SOW)</li>
+                <li>• CAD 14 OLS surface coordinate mapping</li>
+                <li>• Database schema definition</li>
+              </ul>
+            </div>
+            <div class="mono" style="font-size:0.7rem;color:#38bdf8">Deliverable: SOW &amp; FRS Spec</div>
+          </div>
+
+          <div class="g-card g-card-glow-blue" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                <span class="badge b-blue">MONTH 2</span>
+                <span style="font-size:0.74rem;color:#60a5fa;font-weight:700">Weeks 5–8</span>
+              </div>
+              <h4 style="font-size:1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">UI/UX &amp; Art Assets</h4>
+              <ul style="list-style:none;font-size:0.78rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+                <li>• Concept Mockups (Figma)</li>
+                <li>• UI/UX Art Assets Creation</li>
+                <li>• Form layout &amp; upload flow prototyping</li>
+                <li>• Frontend scaffold (Next.js &amp; Tailwind)</li>
+              </ul>
+            </div>
+            <div class="mono" style="font-size:0.7rem;color:#60a5fa">Deliverable: Interactive UI Mockup</div>
+          </div>
+
+          <div class="g-card g-card-glow-green" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                <span class="badge b-green">MONTH 3</span>
+                <span style="font-size:0.74rem;color:#34d399;font-weight:700">Weeks 9–12</span>
+              </div>
+              <h4 style="font-size:1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Core Engine &amp; Features</h4>
+              <ul style="list-style:none;font-size:0.78rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+                <li>• Next.js Core Backend Engine</li>
+                <li>• Master Data (Incoming, Outgoing, Return)</li>
+                <li>• Multiple User Accounts &amp; RBAC Auth</li>
+                <li>• Correspondence Letter Generation</li>
+              </ul>
+            </div>
+            <div class="mono" style="font-size:0.7rem;color:#34d399">Deliverable: Alpha Functional System</div>
+          </div>
+
+          <div class="g-card g-card-glow-purple" style="padding:1.1rem;display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+                <span class="badge b-purple">MONTH 4</span>
+                <span style="font-size:0.74rem;color:#c084fc;font-weight:700">Weeks 13–16</span>
+              </div>
+              <h4 style="font-size:1rem;font-weight:800;color:#ffffff;margin-bottom:0.5rem">Security &amp; Go-Live</h4>
+              <ul style="list-style:none;font-size:0.78rem;color:#cbd5e1;line-height:1.6;display:flex;flex-direction:column;gap:0.35rem">
+                <li>• Security Hardening &amp; Penetration Testing</li>
+                <li>• Reporting Engine &amp; CMS Admin Dashboard</li>
+                <li>• Server Hosting &amp; Cloud Configuration</li>
+                <li>• User Acceptance Testing (UAT) &amp; Go-Live</li>
+              </ul>
+            </div>
+            <div class="mono" style="font-size:0.7rem;color:#c084fc">Deliverable: 100% Production Go-Live</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 12: CALL TO ACTION & JOINT SUBMISSION
+       ============================================================ -->
+  <div class="slide" id="cad_s11">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">Strategic Execution · Next Steps</div>
+          <h2 class="slide-title">Call to Action — <span class="grad">Joint Steering Committee Submission</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Ready for executive presentation and implementation kickoff with CAAM leadership.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1.1;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-green" style="padding:1.2rem;flex:1">
+            <h3 style="font-size:1.15rem;font-weight:900;color:#34d399;margin-bottom:0.6rem">
+              🎯 Value Proposition for CAAM Leadership
+            </h3>
+            <div style="display:flex;flex-direction:column;gap:0.5rem;font-size:0.8rem;color:#cbd5e1">
+              <div>✓ <strong>100% Statutory Compliance:</strong> Closes the regulatory gap under Act 3 Section 24O &amp; CAD 14 Vol I.</div>
+              <div>✓ <strong>Zero Fiscal Burden:</strong> Self-funding 80:20 PPP model generating up to RM 163.5M annual revenue.</div>
+              <div>✓ <strong>Immediate Flight Safety:</strong> 24/7 IoT monitoring over 300,000 obstacle warning lights nationwide.</div>
+              <div>✓ <strong>Operational Excellence:</strong> Reduces building height vetting time from 6 weeks to under 2 seconds.</div>
+            </div>
+          </div>
+
+          <div class="g-card" style="padding:1rem;display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:0.76rem;color:#94a3b8;font-weight:700">OFFICIAL PRESENTATION LEAD</div>
+              <div style="font-size:1.05rem;font-weight:900;color:#ffffff">Suria Ramadhan</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:0.76rem;color:#94a3b8;font-weight:700">SUBMISSION VEHICLE</div>
+              <div style="font-size:1.05rem;font-weight:900;color:#34d399">En. Zarwavai Suratman (C Edge Sdn Bhd)</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-cyan" style="padding:1.2rem;flex:1;display:flex;flex-direction:column;justify-content:space-between">
+            <div>
+              <h4 style="font-size:1rem;font-weight:800;color:#38bdf8;margin-bottom:0.6rem">🚀 Immediate 3-Step Execution Plan:</h4>
+              <ol style="font-size:0.8rem;color:#cbd5e1;line-height:1.6;padding-left:1.1rem;display:flex;flex-direction:column;gap:0.4rem">
+                <li><strong>Step 1:</strong> Formal Presentation of this technical proposal to CAAM Chief Executive Officer and Aerodrome Operations Division.</li>
+                <li><strong>Step 2:</strong> Execute Memorandum of Agreement (MoA) under the 80:20 PPP revenue sharing framework.</li>
+                <li><strong>Step 3:</strong> Mobilize PMT and commence Month 1 SOW requirement gathering and pilot tower onboarding.</li>
+              </ol>
+            </div>
+
+            <div style="display:flex;gap:0.75rem;margin-top:1rem">
+              <button class="btn-nav btn-nav-primary" style="flex:1;padding:0.75rem" onclick="goToSlide(0)">
+                🔄 Restart Keynote Deck
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     BOTTOM NAVIGATION BAR
+     ============================================================ -->
+<div class="bottom-nav">
+  <div class="nav-left">
+    <span style="font-size:1.2rem">✈️</span>
+    <span class="nav-logo-text">CAAM CAD 14 E-Application Portal | Suria Ramadhan for En. Zarwavai Suratman (C Edge Sdn Bhd)</span>
+  </div>
+
+  <div class="nav-dots-wrap" id="cadNavDots"></div>
+
+  <div class="nav-right">
+    <span class="slide-counter-badge" id="cadSlideCounter">01 / 12</span>
+    <button class="btn-nav btn-nav-sec" id="cadPrevBtn" onclick="prevSlide()">← Prev</button>
+    <button class="btn-nav btn-nav-primary" id="cadNextBtn" onclick="nextSlide()">Next →</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT ENGINE (NAVIGATION & PARTICLES)
+     ============================================================ -->
+<script>
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+let currentSlide = 0;
+
+// Initialize Bottom Navigation Dots
+const dotsContainer = document.getElementById('cadNavDots');
+slides.forEach((_, idx) => {
+  const dot = document.createElement('div');
+  dot.classList.add('nav-dot');
+  if (idx === 0) dot.classList.add('active');
+  dot.onclick = () => goToSlide(idx);
+  dotsContainer.appendChild(dot);
+});
+
+updateNavigation();
+
+function updateNavigation() {
+  slides.forEach((slide, idx) => {
+    slide.classList.toggle('active', idx === currentSlide);
+  });
+
+  const dots = document.querySelectorAll('.nav-dot');
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle('active', idx === currentSlide);
+  });
+
+  document.getElementById('cadSlideCounter').textContent = 
+    `${String(currentSlide + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+
+  document.getElementById('cadPrevBtn').disabled = (currentSlide === 0);
+  document.getElementById('cadNextBtn').textContent = (currentSlide === totalSlides - 1) ? 'Finish ↵' : 'Next →';
+}
+
+function nextSlide() {
+  if (currentSlide < totalSlides - 1) {
+    currentSlide++;
+    updateNavigation();
+  }
+}
+
+function prevSlide() {
+  if (currentSlide > 0) {
+    currentSlide--;
+    updateNavigation();
+  }
+}
+
+function goToSlide(idx) {
+  if (idx >= 0 && idx < totalSlides) {
+    currentSlide = idx;
+    updateNavigation();
+  }
+}
+
+// Keyboard Navigation
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+});
+
+// Particles Animation
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 0.35;
+    this.vy = (Math.random() - 0.5) * 0.35;
+    this.radius = Math.random() * 1.5 + 0.8;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < 40; i++) {
+  particles.push(new Particle());
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let i = 0; i < particles.length; i++) {
+    particles[i].update();
+    particles[i].draw();
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(56, 189, 248, ${0.15 * (1 - dist / 120)})`;
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+</script>
+</body>
+</html>
