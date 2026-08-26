@@ -454,7 +454,7 @@ body {
             CAAM E-Application System for <span class="grad">Height Limitation &amp; AOL Compliance</span>
           </h1>
           <p style="font-size:0.98rem;color:#cbd5e1;line-height:1.6;margin-bottom:1.4rem;max-width:720px">
-            A comprehensive turnkey digital solution under <strong>Civil Aviation Act 1969 (Act 3) Section 24O</strong> and <strong>CAD 14 Volume I (Standards for Aerodromes)</strong>. Modernising structure height vetting, IoT Aviation Obstacle Light (AOL) monitoring, and executing the National Legalization Program (<strong>Program Pemutihan</strong>).
+            A comprehensive turnkey digital solution under <strong>Civil Aviation Act 1969 (Act 3) Section 24O</strong> and <strong>CAD 14 Volume I (Standards for Aerodromes - Issue 03 / Rev 01)</strong>. Modernising structure height vetting, IoT Aviation Obstacle Light (AOL) monitoring, and executing the National Legalization Program (<strong>Program Pemutihan</strong>).
           </p>
 
           <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.85rem">
@@ -462,7 +462,7 @@ body {
               <div style="font-size:1.6rem">📡</div>
               <div>
                 <div style="font-size:0.7rem;color:#94a3b8;font-weight:700">TARGETED STRUCTURES</div>
-                <div style="font-size:1rem;font-weight:900;color:#38bdf8">300,000+ Assets</div>
+                <div style="font-size:1rem;font-weight:900;color:#38bdf8">615,000+ Assets</div>
               </div>
             </div>
             <div class="g-card g-card-glow-green" style="padding:0.85rem 1rem;display:flex;align-items:center;gap:0.75rem">
@@ -626,7 +626,7 @@ body {
     <div class="slide-box">
       <div class="slide-hdr">
         <div>
-          <div class="slide-tag">Scope of Regulation · CAD 14 Vol I &amp; Act 3 Section 24O</div>
+          <div class="slide-tag">Scope of Regulation · CAD 14 Vol. I (Issue 03 / Rev 01) &amp; Act 3 Section 24O</div>
           <h2 class="slide-title">9 Regulated Tall Structure Categories — <span class="grad">Full National Scope</span></h2>
         </div>
         <div style="text-align:right">
@@ -876,7 +876,10 @@ body {
 
         <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
           <div class="g-card" style="padding:0.95rem 1.15rem">
-            <h4 style="font-size:0.94rem;font-weight:800;color:#38bdf8;margin-bottom:0.45rem">📐 The 8 Statutory CAD 14 Chapter 4 Surfaces Calculated:</h4>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.45rem">
+              <h4 style="font-size:0.94rem;font-weight:800;color:#38bdf8">📐 The 8 Statutory CAD 14 Chapter 4 Surfaces Calculated:</h4>
+              <span class="badge b-cyan" style="font-size:0.65rem">PostGIS ST_3DIntersects()</span>
+            </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.45rem;font-size:0.76rem">
               <div style="background:rgba(255,255,255,0.03);padding:0.5rem;border-radius:0.4rem;border-left:2px solid #38bdf8">
                 <strong>1. Take-Off Climb Surface:</strong><br>2.0% - 5.0% slope up to 15km
@@ -910,6 +913,9 @@ body {
             <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.5">
               Applicant inputs Latitude, Longitude, Ground Level (GL), and Proposed Height. The system combines digital elevation models (SRTM/LiDAR) with 3D CAD 14 surfaces to deliver an immediate <strong>Approved Height Clearance Certificate</strong> or <strong>Prescribed Mitigation Notice</strong>.
             </p>
+            <div class="mono" style="font-size:0.7rem;color:#34d399;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem;margin-top:0.4rem">
+              Architecture: WGS-84/MSL Geodetic Transform · PostGIS 3D · JUPEM Datum Sync
+            </div>
           </div>
         </div>
       </div>
@@ -946,7 +952,10 @@ body {
 
         <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
           <div class="g-card g-card-glow-cyan" style="padding:1rem">
-            <h4 style="font-size:0.95rem;font-weight:800;color:#38bdf8;margin-bottom:0.4rem">🔴 CAD 14 AOL Technical Standards Ingested:</h4>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <h4 style="font-size:0.95rem;font-weight:800;color:#38bdf8">🔴 CAD 14 AOL Technical Standards Ingested:</h4>
+              <span class="badge b-cyan" style="font-size:0.65rem">MQTT over NB-IoT</span>
+            </div>
             <div style="display:flex;flex-direction:column;gap:0.45rem;font-size:0.78rem;color:#cbd5e1">
               <div style="display:flex;justify-content:space-between;padding:0.35rem 0.5rem;background:rgba(255,255,255,0.03);border-radius:0.3rem">
                 <span><strong>Low-Intensity Type A / B:</strong> (10 cd / 32 cd Fixed Red)</span>
@@ -975,6 +984,9 @@ body {
               <br>2. Automated SMS/Email warning dispatched to tower owner (Maxis/edotco/TNB).
               <br>3. If unrectified within statutory deadline, system automatically generates a <strong>Section 24O(2) Compound Notice</strong>.
             </p>
+            <div class="mono" style="font-size:0.7rem;color:#fca5a5;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem;margin-top:0.4rem">
+              Rule Engine: CAD 14 Chapter 10.5 (50% Lux Loss Trigger) · AFTN Webhook
+            </div>
           </div>
         </div>
       </div>
@@ -1149,14 +1161,76 @@ body {
   </div>
 
   <!-- ============================================================
-       SLIDE 8: NATIONAL STRUCTURE LEGALIZATION (PROGRAM PEMUTIHAN)
+       SLIDE 8: NATIONAL STRUCTURE REGISTRY & GIS COMMAND CENTER (NEW DEDICATED SLIDE)
+       ============================================================ -->
+  <div class="slide" id="cad_s7_gis">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">System 4 in Detail · CAD 14 Chapter 2 &amp; Act 3 Section 24O</div>
+          <h2 class="slide-title">National Airspace GIS Command Center — <span class="grad">615,000 Assets Mapped</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Interactive 3D digital twin giving CAAM complete real-time situational awareness across Malaysian airspace.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1.15">
+          <div class="img-wrap" style="height:100%">
+            <img src="assets/gis_command_center.jpg" alt="National Airspace GIS Command Center">
+            <div class="img-tag-top"><span class="pulse-dot"></span> 3D DIGITAL TWIN · 615,000 VERTICAL STRUCTURES</div>
+            <div class="img-caption-bar">
+              <h5>Real-Time Multi-Screen Airspace Surveillance</h5>
+              <p>Interactive aerodrome OLS envelopes (KLIA, Subang, Penang), live aircraft flight tracks, and color-coded obstacle risk alerts.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-cyan" style="padding:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <h4 style="font-size:0.95rem;font-weight:800;color:#38bdf8">🗺️ Unified National Spatial Database</h4>
+              <span class="badge b-cyan">PostGIS Spatial Index</span>
+            </div>
+            <p style="font-size:0.77rem;color:#cbd5e1;line-height:1.45;margin-bottom:0.45rem">
+              Eliminates fragmented physical dossiers. Provides CAAM AGA inspectors and management with an interactive, layered 3D GIS interface covering all 9 regulated asset classes nationwide.
+            </p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem;background:rgba(0,0,0,0.35);padding:0.45rem;border-radius:0.4rem;font-size:0.7rem;color:#cbd5e1">
+              <div>📍 Spatial Filtering: <strong>By Aerodrome / PBT</strong></div>
+              <div>⚡ Altitude Layers: <strong>&lt;50m, 100m, 200m+</strong></div>
+              <div>🔴 Live AOL Status: <strong>Online / Outage Alert</strong></div>
+              <div>💳 Revenue Status: <strong>Paid / Expired License</strong></div>
+            </div>
+          </div>
+
+          <div class="g-card g-card-glow-green" style="padding:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <h4 style="font-size:0.95rem;font-weight:800;color:#34d399">💳 Automated Billing &amp; Revenue Ledger</h4>
+              <span class="badge b-green">FPX / DuitNow Gateway</span>
+            </div>
+            <p style="font-size:0.77rem;color:#cbd5e1;line-height:1.45">
+              Automated invoice generation, annual license renewal notices, multi-tier corporate invoicing for MNOs (edotco, DNB, Maxis), and instant digital receipting reconciled with CAAM financial ledger.
+            </p>
+            <div class="mono" style="font-size:0.7rem;color:#34d399;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem;margin-top:0.35rem">
+              Tech: Mapbox GL / PostGIS · ACID Ledger · Automated Billing Daemon
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 9: NATIONAL STRUCTURE LEGALIZATION (PROGRAM PEMUTIHAN)
        ============================================================ -->
   <div class="slide" id="cad_s7">
     <div class="slide-box">
       <div class="slide-hdr">
         <div>
-          <div class="slide-tag">National Legalization Drive · Act 3 S.24O</div>
-          <h2 class="slide-title">Program Pemutihan — <span class="grad">National Structure Legalization</span></h2>
+          <div class="slide-tag">System 5 in Detail · Act 3 Section 24O Amnesty Drive</div>
+          <h2 class="slide-title">Program Pemutihan — <span class="grad">Bulk Structure Legalization Pipeline</span></h2>
         </div>
         <div style="text-align:right">
           <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
@@ -1168,7 +1242,7 @@ body {
         <div style="flex:1.1">
           <div class="img-wrap" style="height:100%">
             <img src="assets/ops_transformation.jpg" alt="Program Pemutihan">
-            <div class="img-tag-top"><span class="pulse-dot"></span> GREENFIELD &amp; BROWNFIELD LEGALIZATION PIPELINE</div>
+            <div class="img-tag-top"><span class="pulse-dot"></span> BULK ASSET INGESTION · GREENFIELD &amp; BROWNFIELD</div>
             <div class="img-caption-bar">
               <h5>Transforming Unrecorded Liabilities into Compliant Assets</h5>
               <p>Phased national campaign empowering telcos, power companies, and developers to regularize assets with CAAM.</p>
@@ -1195,9 +1269,12 @@ body {
           </div>
 
           <div class="g-card g-card-glow-cyan" style="padding:1.1rem">
-            <h4 style="font-size:0.98rem;font-weight:800;color:#38bdf8;margin-bottom:0.4rem">📦 Bulk Enterprise Ingestion Tools</h4>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <h4 style="font-size:0.98rem;font-weight:800;color:#38bdf8">📦 Bulk Enterprise Ingestion Tools</h4>
+              <span class="badge b-cyan">Batch GeoJSON / KML</span>
+            </div>
             <p style="font-size:0.78rem;color:#cbd5e1;line-height:1.5">
-              Major infrastructure providers (edotco, EdgePoint, DNB, Tenaga Nasional Berhad) can batch-upload thousands of tower coordinates via GeoJSON/KML or REST API, reducing onboarding time from months to hours.
+              Major infrastructure providers (edotco, EdgePoint, DNB, Tenaga Nasional Berhad) can batch-upload thousands of tower coordinates via GeoJSON/KML or REST API, reducing onboarding time from months to minutes.
             </p>
           </div>
 
@@ -1210,7 +1287,63 @@ body {
   </div>
 
   <!-- ============================================================
-       SLIDE 9: COMMERCIAL MODEL (80:20 PROFIT SHARING) (PDF Page 26-27)
+       SLIDE 10: INTER-AGENCY GATEWAY & PBT INTEGRATION (NEW DEDICATED SLIDE)
+       ============================================================ -->
+  <div class="slide" id="cad_s8_pbt">
+    <div class="slide-box">
+      <div class="slide-hdr">
+        <div>
+          <div class="slide-tag">System 6 in Detail · Whole-of-Government Synergy</div>
+          <h2 class="slide-title">Inter-Agency Gateway — <span class="grad">PBT OSC 3.0+ &amp; MCMC Integration</span></h2>
+        </div>
+        <div style="text-align:right">
+          <div class="author-pill">👤 <strong>Suria Ramadhan</strong> for <span class="target-name">En. Zarwavai Suratman (C Edge Sdn Bhd)</span></div>
+          <div class="slide-subtitle">Connecting CAAM with Local Councils (PBT), KPKT One-Stop Centre, and MCMC Telco Registry.</div>
+        </div>
+      </div>
+
+      <div class="slide-body">
+        <div style="flex:1.15">
+          <div class="img-wrap" style="height:100%">
+            <img src="assets/pbt_interagency_gateway.jpg" alt="PBT Inter-Agency Gateway">
+            <div class="img-tag-top"><span class="pulse-dot"></span> INTER-AGENCY DATA BRIDGE · REST API &amp; OAUTH 2.0</div>
+            <div class="img-caption-bar">
+              <h5>Automated Statutory Clearance Before Building Approval</h5>
+              <p>Prevents uncoordinated high-rise or telco construction by locking local council Development Orders until CAAM clearance is issued.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:0.75rem">
+          <div class="g-card g-card-glow-green" style="padding:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <h4 style="font-size:0.95rem;font-weight:800;color:#34d399">🏛️ KPKT One-Stop Centre (OSC 3.0+) Integration</h4>
+              <span class="badge b-green">Automated Check</span>
+            </div>
+            <p style="font-size:0.77rem;color:#cbd5e1;line-height:1.45">
+              When a developer submits a planning permission (Kebenaran Merancang - KM) to DBKL, MBPJ, or MPKJ, the OSC 3.0+ system automatically queries CAAM’s 3D OLS engine via API to verify flight corridor clearance.
+            </p>
+          </div>
+
+          <div class="g-card g-card-glow-blue" style="padding:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+              <h4 style="font-size:0.95rem;font-weight:800;color:#60a5fa">📡 MCMC Spectrum &amp; Tower License Cross-Check</h4>
+              <span class="badge b-blue">MCMC Sync</span>
+            </div>
+            <p style="font-size:0.77rem;color:#cbd5e1;line-height:1.45">
+              Cross-references telco site Apparatus Assignments (AA) with CAAM's height and AOL database, ensuring no telco tower operates without certified aviation warning lights.
+            </p>
+            <div class="mono" style="font-size:0.7rem;color:#60a5fa;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.35rem;margin-top:0.35rem">
+              Tech: OAuth 2.0 Webhook Gateway · JSON Schema Validation · TLS 1.3
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 11: COMMERCIAL MODEL (80:20 PROFIT SHARING) (PDF Page 26-27)
        ============================================================ -->
   <div class="slide" id="cad_s8">
     <div class="slide-box">
@@ -1338,7 +1471,7 @@ body {
   </div>
 
   <!-- ============================================================
-       SLIDE 10: 10-YEAR CASHFLOW FORECAST (PDF Page 28-29)
+       SLIDE 12: 10-YEAR CASHFLOW FORECAST (PDF Page 28-29)
        ============================================================ -->
   <div class="slide" id="cad_s9">
     <div class="slide-box">
@@ -1448,7 +1581,7 @@ body {
   </div>
 
   <!-- ============================================================
-       SLIDE 11: TECHNICAL DEVELOPMENT TIMELINE (PDF Page 16)
+       SLIDE 13: TECHNICAL DEVELOPMENT TIMELINE (PDF Page 16)
        ============================================================ -->
   <div class="slide" id="cad_s10">
     <div class="slide-box">
@@ -1538,7 +1671,7 @@ body {
   </div>
 
   <!-- ============================================================
-       SLIDE 12: CALL TO ACTION & JOINT SUBMISSION (COMPLETE REDESIGN)
+       SLIDE 14: CALL TO ACTION & JOINT SUBMISSION (COMPLETE REDESIGN)
        ============================================================ -->
   <div class="slide" id="cad_s11">
     <div class="slide-box">
@@ -1566,7 +1699,7 @@ body {
                 <span class="badge b-green">100% Compliance</span>
               </div>
               <div style="font-weight:900;font-size:0.95rem;color:#ffffff;margin-bottom:0.2rem">Act 3 Section 24O</div>
-              <p style="font-size:0.76rem;color:#cbd5e1;line-height:1.4">Eliminates unrecorded hazard liabilities across 300,000+ tall structures nationwide.</p>
+              <p style="font-size:0.76rem;color:#cbd5e1;line-height:1.4">Eliminates unrecorded hazard liabilities across 615,000+ tall structures nationwide.</p>
               <div style="font-size:0.72rem;color:#6ee7b7;margin-top:0.3rem">• Zero unlicensed aerodrome penetration</div>
             </div>
             <div style="font-size:0.72rem;color:#34d399;font-weight:700;border-top:1px solid rgba(255,255,255,0.06);padding-top:0.3rem">✓ Full Statutory Legal Shield</div>
@@ -1728,7 +1861,7 @@ body {
   <div class="nav-dots-wrap" id="cadNavDots"></div>
 
   <div class="nav-right">
-    <span class="slide-counter-badge" id="cadSlideCounter">01 / 12</span>
+    <span class="slide-counter-badge" id="cadSlideCounter">01 / 14</span>
     <button class="btn-nav btn-nav-sec" id="cadPrevBtn" onclick="prevSlide()">← Prev</button>
     <button class="btn-nav btn-nav-primary" id="cadNextBtn" onclick="nextSlide()">Next →</button>
   </div>
